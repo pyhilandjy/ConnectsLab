@@ -140,9 +140,9 @@ def get_user_name(file_path):
 def get_user_id(user_name):
     # MySQL에서 user_id에 해당하는 사용자 정보 조회
     connection = pymysql.connect(
-        user='root',
+        user='jun',
         password='1234qwer',
-        host='mysql',
+        host='host.docker.internal',
         database='STT',
         cursorclass=pymysql.cursors.DictCursor
     )
@@ -204,7 +204,7 @@ def STT():
             data_list.append([user_id, user_name, start_time, end_time, text, confidence, speaker_label, text_edited, date])
 
 
-        df = pd.DataFrame(data_list, columns=['user_id', 'user_name', '시작 시간', '종료 시간', '텍스트', '신뢰도', '화자', '텍스트 편집 여부', '날짜'])
+        df = pd.DataFrame(data_list, columns=['user_id', 'user_name', 'start_time', 'end_time', 'text', 'confidence', 'speaker_label', 'text_edited', 'date'])
     to_db(table = 'STT', df = df)
 
 def stop_airflow_containers():

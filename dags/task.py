@@ -44,12 +44,18 @@ def STT():
             user_name = get_user_name(audio_file)
             user_id = get_user_id(user_name)
             date = base_filename[:6]
+            
 
             data_list.append([user_id, user_name, start_time, end_time, text, confidence, speaker_label, text_edited, date])
 
-
-        df = pd.DataFrame(data_list, columns=['user_id', 'user_name', '시작 시간', '종료 시간', '텍스트', '신뢰도', '화자', '텍스트 편집 여부', '날짜'])
-    to_db(table = 'STT', df = df)
+        
+        df = pd.DataFrame(data_list, columns=['user_id', 'user_name', 'start_time', 'end_time', 'text', 'confidence', 'speaker_label', 'text_edited', 'date'])
+        
+        df['index'] = df.groupby(['user_id', 'date']).cumcount() + 1
+        
+        df['unique_id'] = df['user_id'].astype(str) + '_' + df['date'].astype(str) + '_' + df['index'].astype(str)
+        
+    to_db(df)
 
 default_args = {
     "owner": "airflow",
@@ -77,3 +83,5 @@ get_instagram_task = PythonOperator(
     provide_context=True,
     dag=dag,
 )
+
+

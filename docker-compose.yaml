@@ -87,17 +87,17 @@ x-airflow-common:
       condition: service_healthy
 
 services:
-  db:
-    container_name: mysql
-    image: mysql:latest
-    # NOTE: use of "mysql_native_password" is not recommended: https://dev.mysql.com/doc/refman/8.0/en/upgrading-from-previous-series.html#upgrade-caching-sha2-password
-    # (this is just an example, not intended to be a production configuration)
-    command: --default-authentication-plugin=mysql_native_password
-    restart: always
-    ports:
-      - "3306:3306"
-    environment:
-      MYSQL_ROOT_PASSWORD: '1234qwer'
+  # db:
+  #   container_name: mysql
+  #   image: mysql:latest
+  #   # NOTE: use of "mysql_native_password" is not recommended: https://dev.mysql.com/doc/refman/8.0/en/upgrading-from-previous-series.html#upgrade-caching-sha2-password
+  #   # (this is just an example, not intended to be a production configuration)
+  #   command: --default-authentication-plugin=mysql_native_password
+  #   restart: always
+  #   ports:
+  #     - "3306:3306"
+  #   environment:
+  #     MYSQL_ROOT_PASSWORD: '1234qwer'
 
   postgres:
     image: postgres:13

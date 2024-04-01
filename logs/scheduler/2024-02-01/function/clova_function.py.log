@@ -1,0 +1,15 @@
+[2024-02-01T12:48:56.893+0000] {processor.py:157} INFO - Started process (PID=37) to work on /opt/airflow/dags/function/clova_function.py
+[2024-02-01T12:48:56.911+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/function/clova_function.py for tasks to queue
+[2024-02-01T12:48:56.918+0000] {logging_mixin.py:154} INFO - [2024-02-01T12:48:56.917+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/function/clova_function.py
+[2024-02-01T12:49:03.374+0000] {processor.py:841} WARNING - No viable dags retrieved from /opt/airflow/dags/function/clova_function.py
+[2024-02-01T12:49:03.420+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/function/clova_function.py took 6.535 seconds
+[2024-02-01T12:49:34.440+0000] {processor.py:157} INFO - Started process (PID=47) to work on /opt/airflow/dags/function/clova_function.py
+[2024-02-01T12:49:34.460+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/function/clova_function.py for tasks to queue
+[2024-02-01T12:49:34.488+0000] {logging_mixin.py:154} INFO - [2024-02-01T12:49:34.479+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/function/clova_function.py
+[2024-02-01T12:49:42.272+0000] {processor.py:841} WARNING - No viable dags retrieved from /opt/airflow/dags/function/clova_function.py
+[2024-02-01T12:49:42.620+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/function/clova_function.py took 8.191 seconds
+[2024-02-01T12:50:13.880+0000] {processor.py:157} INFO - Started process (PID=65) to work on /opt/airflow/dags/function/clova_function.py
+[2024-02-01T12:50:13.891+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/function/clova_function.py for tasks to queue
+[2024-02-01T12:50:13.906+0000] {logging_mixin.py:154} INFO - [2024-02-01T12:50:13.899+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/function/clova_function.py
+[2024-02-01T12:50:18.801+0000] {processor.py:841} WARNING - No viable dags retrieved from /opt/airflow/dags/function/clova_function.py
+[2024-02-01T12:50:18.860+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/function/clova_function.py took 5.021 seconds

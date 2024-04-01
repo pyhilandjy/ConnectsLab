@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <meta charset="UTF-8">
+    <meta viewport="width=device-width, initial-scale=1.0">
+    <title>STT Text 수정</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+    <style>
+        .text-edited { width: 100%; } /* 너비 조정 */
+    </style>
+</head>
+<body>
+    <h1>STT Text 수정</h1>
+    <input type="text" id="datepicker" value="">
+    <button onclick="saveAll()">저장</button> <!-- 전체 저장 버튼 -->
+    <table border="1" id="data-table">
+        <thead>
+            <tr>
+                <th>User Name</th>
+                <th>Text</th>
+                <th>Text Edited</th>
+                <th>Confidence</th>
+                <th>Speaker Label</th>
+                <th>Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- 데이터는 JavaScript로 추가됩니다. -->
+        </tbody>
+    </table>
+    <button onclick="saveAll()" style="margin-top: 20px;">저장</button> <!-- 테이블 아래의 추가된 저장 버튼 -->
+    
+
+    <script>
+        $(function() {
+            var yesterday = new Date(new Date().setDate(new Date().getDate() - 1));
+            $("#datepicker").datepicker({
+                dateFormat: 'yy-mm-dd'
+            }).datepicker("setDate", yesterday);
+            fetchData(yesterday.toISOString().split('T')[0]); // 어제 날짜로 초기 데이터 로드
+
+            $("#datepicker").change(function() {
+                fetchData($(this).val());
+            });
+        });
+
+        function fetchData(date) {
+            $.ajax({
+                url: '/get_data',
+                type: 'POST',
+                data: {'date': date},
+                success: function(response) {
+                    $('#data-table tbody').html(response);
+                }
+            });
+        }
+
+        function saveAll() {
+            var data = [];
+            $("#data-table tbody tr").each(function() {
+                var row = $(this);
+                var uniqueId = row.data('unique-id');  // 여기에서 uniqueId를 가져옵니다.
+                var textEdited = row.find(".text-edited").val();  // 수정된 텍스트를 가져옵니다.
+                data.push({uniqueId: uniqueId, textEdited: textEdited});  // 각 레코드의 정보를 배열에 추가합니다.
+            });
+            
+            // 수정된 데이터를 서버로 전송하는 AJAX 요청
+            $.ajax({
+                url: '/update',
+                type: 'POST',
+                contentType: "application/json",
+                data: JSON.stringify({data: data}),  // JSON 데이터로 변환하여 전송
+                success: function(response) {
+                    alert('모든 변경사항이 저장되었습니다.');
+                },
+                error: function() {
+                    alert('저장 중 오류가 발생했습니다.');
+                }
+            });
+        }
+    </script>
+</body>
+</html>
+

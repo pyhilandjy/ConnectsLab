@@ -1,0 +1,25 @@
+[2024-03-24T05:31:49.650+0000] {taskinstance.py:1159} INFO - Dependencies all met for dep_context=non-requeueable deps ti=<TaskInstance: stt_task.STT manual__2024-03-24T05:31:48.034088+00:00 [queued]>
+[2024-03-24T05:31:49.665+0000] {taskinstance.py:1159} INFO - Dependencies all met for dep_context=requeueable deps ti=<TaskInstance: stt_task.STT manual__2024-03-24T05:31:48.034088+00:00 [queued]>
+[2024-03-24T05:31:49.666+0000] {taskinstance.py:1361} INFO - Starting attempt 1 of 2
+[2024-03-24T05:31:49.688+0000] {taskinstance.py:1382} INFO - Executing <Task(PythonOperator): STT> on 2024-03-24 05:31:48.034088+00:00
+[2024-03-24T05:31:49.696+0000] {standard_task_runner.py:57} INFO - Started process 205 to run task
+[2024-03-24T05:31:49.701+0000] {standard_task_runner.py:84} INFO - Running: ['***', 'tasks', 'run', 'stt_task', 'STT', 'manual__2024-03-24T05:31:48.034088+00:00', '--job-id', '36', '--raw', '--subdir', 'DAGS_FOLDER/task.py', '--cfg-path', '/tmp/tmpdmopep6g']
+[2024-03-24T05:31:49.708+0000] {standard_task_runner.py:85} INFO - Job 36: Subtask STT
+[2024-03-24T05:31:49.847+0000] {task_command.py:416} INFO - Running <TaskInstance: stt_task.STT manual__2024-03-24T05:31:48.034088+00:00 [running]> on host 6fe5f6995c4e
+[2024-03-24T05:31:49.966+0000] {taskinstance.py:1662} INFO - Exporting env vars: AIRFLOW_CTX_DAG_OWNER='***' AIRFLOW_CTX_DAG_ID='stt_task' AIRFLOW_CTX_TASK_ID='STT' AIRFLOW_CTX_EXECUTION_DATE='2024-03-24T05:31:48.034088+00:00' AIRFLOW_CTX_TRY_NUMBER='1' AIRFLOW_CTX_DAG_RUN_ID='manual__2024-03-24T05:31:48.034088+00:00'
+[2024-03-24T05:31:49.973+0000] {logging_mixin.py:154} INFO - b'{"language": "ko-KR", "completion": "sync", "callback": null, "userdata": null, "wordAlignment": true, "fullText": true, "forbiddens": null, "boostings": null, "diarization": null}'
+[2024-03-24T05:31:58.336+0000] {taskinstance.py:1937} ERROR - Task failed with exception
+Traceback (most recent call last):
+  File "/home/airflow/.local/lib/python3.9/site-packages/airflow/operators/python.py", line 192, in execute
+    return_value = self.execute_callable()
+  File "/home/airflow/.local/lib/python3.9/site-packages/airflow/operators/python.py", line 209, in execute_callable
+    return self.python_callable(*self.op_args, **self.op_kwargs)
+  File "/opt/airflow/dags/task.py", line 45, in STT
+    user_id = get_user_id(user_name)
+  File "/opt/airflow/dags/function/clova_function.py", line 158, in get_user_id
+    return str(result['user_id'])
+TypeError: 'NoneType' object is not subscriptable
+[2024-03-24T05:31:58.349+0000] {taskinstance.py:1400} INFO - Marking task as UP_FOR_RETRY. dag_id=stt_task, task_id=STT, execution_date=20240324T053148, start_date=20240324T053149, end_date=20240324T053158
+[2024-03-24T05:31:58.586+0000] {standard_task_runner.py:104} ERROR - Failed to execute job 36 for task STT ('NoneType' object is not subscriptable; 205)
+[2024-03-24T05:31:58.636+0000] {local_task_job_runner.py:228} INFO - Task exited with return code 1
+[2024-03-24T05:31:58.657+0000] {taskinstance.py:2778} INFO - 0 downstream tasks scheduled from follow-on schedule check

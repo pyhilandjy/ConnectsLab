@@ -1,0 +1,25 @@
+[2024-03-26T00:18:11.842+0000] {processor.py:157} INFO - Started process (PID=4818) to work on /opt/airflow/dags/function/clova_function.py
+[2024-03-26T00:18:11.849+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/function/clova_function.py for tasks to queue
+[2024-03-26T00:18:11.856+0000] {logging_mixin.py:154} INFO - [2024-03-26T00:18:11.853+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/function/clova_function.py
+[2024-03-26T00:18:13.447+0000] {processor.py:841} WARNING - No viable dags retrieved from /opt/airflow/dags/function/clova_function.py
+[2024-03-26T00:18:13.523+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/function/clova_function.py took 1.714 seconds
+[2024-03-26T01:19:27.214+0000] {processor.py:157} INFO - Started process (PID=4829) to work on /opt/airflow/dags/function/clova_function.py
+[2024-03-26T01:19:27.226+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/function/clova_function.py for tasks to queue
+[2024-03-26T01:19:27.232+0000] {logging_mixin.py:154} INFO - [2024-03-26T01:19:27.231+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/function/clova_function.py
+[2024-03-26T01:19:28.443+0000] {processor.py:841} WARNING - No viable dags retrieved from /opt/airflow/dags/function/clova_function.py
+[2024-03-26T01:19:28.462+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/function/clova_function.py took 1.317 seconds
+[2024-03-26T02:20:33.172+0000] {processor.py:157} INFO - Started process (PID=4840) to work on /opt/airflow/dags/function/clova_function.py
+[2024-03-26T02:20:33.177+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/function/clova_function.py for tasks to queue
+[2024-03-26T02:20:33.182+0000] {logging_mixin.py:154} INFO - [2024-03-26T02:20:33.180+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/function/clova_function.py
+[2024-03-26T02:20:34.460+0000] {processor.py:841} WARNING - No viable dags retrieved from /opt/airflow/dags/function/clova_function.py
+[2024-03-26T02:20:34.479+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/function/clova_function.py took 1.342 seconds
+[2024-03-26T03:21:31.403+0000] {processor.py:157} INFO - Started process (PID=4851) to work on /opt/airflow/dags/function/clova_function.py
+[2024-03-26T03:21:31.410+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/function/clova_function.py for tasks to queue
+[2024-03-26T03:21:31.417+0000] {logging_mixin.py:154} INFO - [2024-03-26T03:21:31.414+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/function/clova_function.py
+[2024-03-26T03:21:32.849+0000] {processor.py:841} WARNING - No viable dags retrieved from /opt/airflow/dags/function/clova_function.py
+[2024-03-26T03:21:32.871+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/function/clova_function.py took 1.496 seconds
+[2024-03-26T03:40:56.147+0000] {processor.py:157} INFO - Started process (PID=4862) to work on /opt/airflow/dags/function/clova_function.py
+[2024-03-26T03:40:56.150+0000] {processor.py:829} INFO - Processing file /opt/airflow/dags/function/clova_function.py for tasks to queue
+[2024-03-26T03:40:56.157+0000] {logging_mixin.py:154} INFO - [2024-03-26T03:40:56.155+0000] {dagbag.py:536} INFO - Filling up the DagBag from /opt/airflow/dags/function/clova_function.py
+[2024-03-26T03:40:59.112+0000] {processor.py:841} WARNING - No viable dags retrieved from /opt/airflow/dags/function/clova_function.py
+[2024-03-26T03:40:59.156+0000] {processor.py:179} INFO - Processing /opt/airflow/dags/function/clova_function.py took 3.035 seconds
