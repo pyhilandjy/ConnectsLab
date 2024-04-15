@@ -1,0 +1,22 @@
+[2024-04-02T11:13:53.357+0000] {taskinstance.py:1159} INFO - Dependencies all met for dep_context=non-requeueable deps ti=<TaskInstance: stt_task.STT scheduled__2024-04-01T00:00:00+00:00 [queued]>
+[2024-04-02T11:13:53.371+0000] {taskinstance.py:1159} INFO - Dependencies all met for dep_context=requeueable deps ti=<TaskInstance: stt_task.STT scheduled__2024-04-01T00:00:00+00:00 [queued]>
+[2024-04-02T11:13:53.373+0000] {taskinstance.py:1361} INFO - Starting attempt 2 of 2
+[2024-04-02T11:13:53.391+0000] {taskinstance.py:1382} INFO - Executing <Task(PythonOperator): STT> on 2024-04-01 00:00:00+00:00
+[2024-04-02T11:13:53.398+0000] {standard_task_runner.py:57} INFO - Started process 69 to run task
+[2024-04-02T11:13:53.402+0000] {standard_task_runner.py:84} INFO - Running: ['***', 'tasks', 'run', 'stt_task', 'STT', 'scheduled__2024-04-01T00:00:00+00:00', '--job-id', '60', '--raw', '--subdir', 'DAGS_FOLDER/task.py', '--cfg-path', '/tmp/tmpardzitwz']
+[2024-04-02T11:13:53.407+0000] {standard_task_runner.py:85} INFO - Job 60: Subtask STT
+[2024-04-02T11:13:53.467+0000] {task_command.py:416} INFO - Running <TaskInstance: stt_task.STT scheduled__2024-04-01T00:00:00+00:00 [running]> on host bd3757cb365e
+[2024-04-02T11:13:53.556+0000] {taskinstance.py:1662} INFO - Exporting env vars: AIRFLOW_CTX_DAG_OWNER='***' AIRFLOW_CTX_DAG_ID='stt_task' AIRFLOW_CTX_TASK_ID='STT' AIRFLOW_CTX_EXECUTION_DATE='2024-04-01T00:00:00+00:00' AIRFLOW_CTX_TRY_NUMBER='2' AIRFLOW_CTX_DAG_RUN_ID='scheduled__2024-04-01T00:00:00+00:00'
+[2024-04-02T11:13:53.560+0000] {taskinstance.py:1937} ERROR - Task failed with exception
+Traceback (most recent call last):
+  File "/home/airflow/.local/lib/python3.9/site-packages/airflow/operators/python.py", line 192, in execute
+    return_value = self.execute_callable()
+  File "/home/airflow/.local/lib/python3.9/site-packages/airflow/operators/python.py", line 209, in execute_callable
+    return self.python_callable(*self.op_args, **self.op_kwargs)
+  File "/opt/airflow/dags/task.py", line 58, in STT
+    to_db(df)
+UnboundLocalError: local variable 'df' referenced before assignment
+[2024-04-02T11:13:53.572+0000] {taskinstance.py:1400} INFO - Marking task as FAILED. dag_id=stt_task, task_id=STT, execution_date=20240401T000000, start_date=20240402T111353, end_date=20240402T111353
+[2024-04-02T11:13:53.586+0000] {standard_task_runner.py:104} ERROR - Failed to execute job 60 for task STT (local variable 'df' referenced before assignment; 69)
+[2024-04-02T11:13:53.617+0000] {local_task_job_runner.py:228} INFO - Task exited with return code 1
+[2024-04-02T11:13:53.640+0000] {taskinstance.py:2778} INFO - 0 downstream tasks scheduled from follow-on schedule check
