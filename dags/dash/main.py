@@ -46,5 +46,17 @@ def update():
     cur.close()
     return jsonify({'status': 'success'})
 
+
+@app.route('/get_usernames', methods=['POST'])
+def get_usernames():
+    selected_date = request.form['date']
+    cur = mysql.connection.cursor(cursorclass=MySQLdb.cursors.DictCursor)
+    query = "SELECT DISTINCT user_name FROM STT WHERE DATE(date) = %s"
+    cur.execute(query, (selected_date,))
+    user_names = cur.fetchall()
+    cur.close()
+    return jsonify(user_names)
+
+
 if __name__ == "__main__":
     app.run(debug=True)
