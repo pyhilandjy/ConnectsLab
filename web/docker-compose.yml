@@ -1,0 +1,14 @@
+version: '3.3'
+services:
+  postgres:
+    image: postgres:14.5
+    restart: always
+    environment:
+      - POSTGRES_DB=connects_lab
+      - POSTGRES_USER=connects_lab
+      - POSTGRES_PASSWORD=connects_lab
+      - POSTGRES_INITDB_ARGS=--encoding=UTF-8
+    ports:
+      - '5432:5432'
+    volumes: 
+      - ./db/data/postgresql:/var/lib/postgresql/data
