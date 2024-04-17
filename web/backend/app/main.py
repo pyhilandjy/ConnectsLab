@@ -1,6 +1,8 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.routers import audio
+
+from app.routers import audio, users
+
 
 app = FastAPI()
 
@@ -12,7 +14,10 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
 app.include_router(audio.router, prefix="/audio")
+app.include_router(users.router, prefix="/users")
+
 
 @app.get("/")
 async def home():

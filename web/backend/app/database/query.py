@@ -11,3 +11,10 @@ INSERT INTO files (id, user_id, file_name, file_path, created_at) VALUES
     current_timestamp)
     """
 )
+
+SELECT_USERS = text(
+    """
+SELECT id, *
+FROM users
+    """
+)
