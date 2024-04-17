@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "backend"
+name = "ui"
 version = "0.1.0"
 description = ""
 authors = ["juyony <wnsdyd1991@gmail.com>"]
@@ -7,11 +7,9 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.10"
-psycopg2-binary = "^2.9.9"
-sqlalchemy = "^2.0.29"
-fastapi = {extras = ["all"], version = "^0.110.1"}
-uvicorn = "^0.29.0"
-pydantic-settings = "^2.2.1"
+streamlit = "^1.33.0"
+requests = "^2.31.0"
+
 
 [build-system]
 requires = ["poetry-core"]
