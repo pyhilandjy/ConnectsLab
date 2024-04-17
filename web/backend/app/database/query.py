@@ -18,3 +18,19 @@ SELECT id, *
 FROM users
     """
 )
+
+INSERT_STT_RESULT_DATA = text(
+    """
+INSERT INTO files (file_id, index, start_time, end_time, text, confidence, speaker_label, text_edited, created_at) VALUES 
+(
+    :file_id, 
+    :index,
+    :start_time,
+    :end_time,
+    :text,
+    :confidence,
+    :speaker_label,
+    :text_edited,
+    current_timestamp)
+    """
+)

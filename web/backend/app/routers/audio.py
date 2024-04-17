@@ -1,17 +1,51 @@
 from datetime import datetime
 import json
-from fastapi import APIRouter, FastAPI, File, UploadFile, HTTPException, Form
+from fastapi import APIRouter, FastAPI, File, UploadFile, HTTPException, Form, Depends, BackgroundTasks
+from datetime import datetime
 from starlette.concurrency import run_in_threadpool
+import pandas as pd
 
-from app.database.query import INSERT_FILE_META_DATA
+from app.database.query import INSERT_FILE_META_DATA, INSERT_STT_RESULT_DATA
 from app.database.worker import execute_insert_update_query_single
 from app.routers.function.clova_function import ClovaSpeechClient
 
 router = APIRouter()
 app = FastAPI()
 
+def get_clova_client():
+    return ClovaSpeechClient()
+
+# @router.post("/uploadfile/", tags=["Audio"])
+# async def create_upload_file(
+#     background_tasks: BackgroundTasks,
+#     user_id: str = Form(...), 
+#     file: UploadFile = File(...),
+#     clova_client: ClovaSpeechClient = Depends(get_clova_client)
+# ):
+#     try:
+#         file_id = gen_file_id(user_id)
+#         file_path = gen_file_path(file_id)
+#         await save_file(file, file_path)
+        
+#         metadata = create_metadata(file_id, user_id, file.filename, file_path)
+#         insert_file_metadata(metadata)
+        
+#         # 인스턴스를 통한 req_upload 메소드 호출
+#         segments = await stt_results(clova_client, file_path)
+
+#         return segments
+
+#     except Exception as e:
+#         print(f"Error occurred: {e}")
+#         raise HTTPException(status_code=500, detail=f"Failed to upload file: {str(e)}")
+
 @router.post("/uploadfile/", tags=["Audio"])
-async def create_upload_file(user_id: str = Form(...), file: UploadFile = File(...)):
+async def create_upload_file(
+    background_tasks: BackgroundTasks,
+    user_id: str = Form(...), 
+    file: UploadFile = File(...),
+    clova_client: ClovaSpeechClient = Depends(get_clova_client)
+):
     try:
         file_id = gen_file_id(user_id)
         file_path = gen_file_path(file_id)
@@ -20,10 +54,12 @@ async def create_upload_file(user_id: str = Form(...), file: UploadFile = File(.
         metadata = create_metadata(file_id, user_id, file.filename, file_path)
         insert_file_metadata(metadata)
         
-        await file.seek(0)
-        stt_result = await request_clova_stt(file)
-        return stt_result
-        
+        # stt_results 함수를 백그라운드 작업으로 추가
+        stt_response(clova_client, file_path, file_id)
+
+
+        return stt_response
+
     except Exception as e:
         print(f"Error occurred: {e}")
         raise HTTPException(status_code=500, detail=f"Failed to upload file: {str(e)}")
@@ -56,40 +92,48 @@ def insert_file_metadata(metadata: dict):
         params=metadata
     )
 
-async def request_clova_stt(file: UploadFile):
-    try:
-        # 파일 데이터를 안전하게 읽기
-        file_data = await file.read()
-        if b'\0' in file_data:
-            raise ValueError("File data contains an embedded null byte")
+def insert_stt_result_data(data_list):
+    for data in data_list:
+        try:
+            execute_insert_update_query_single(
+                query=INSERT_STT_RESULT_DATA, 
+                params=data
+            )
+        except Exception as e:
+            print(f"데이터 삽입 중 오류 발생: {e}")
 
-        # Clova STT 요청을 실행
-        return await run_in_threadpool(process_stt, file_data)
-    except ValueError as e:
-        print(f"Validation error: {e}")
-        raise HTTPException(status_code=400, detail=str(e))
-    except Exception as e:
-        print(f"Error occurred: {e}")
-        raise HTTPException(status_code=500, detail=f"Failed to process STT: {str(e)}")
+async def stt_response(clova_client, file_path, file_id):
+    response = await run_in_threadpool(clova_client.req_upload, file_path, completion='sync')
+    clova_output = response.text
+    data = json.loads(clova_output)
+    segments = data['segments']
 
+    data_list = []
+    index = 1  
+    for segment in segments:
+        start_time = segment['start']
+        end_time = segment['end']
+        text = segment['text']
+        confidence = segment['confidence']
+        speaker_label = segment['speaker']['label']
+        text_edited = segment['textEdited']
 
-def process_stt(file_data):
-    client = ClovaSpeechClient()
-    # 올바른 인자 이름 'file'를 사용하여 메서드 호출
-    response = client.req_upload(file=file_data)
-    return response.json()
+        segment_data = {
+            'file_id': file_id,
+            'index': index,
+            'start_time': start_time,
+            'end_time': end_time,
+            'text': text,
+            'confidence': confidence,
+            'speaker_label': speaker_label,
+            'text_edited': text_edited
+        }
+        data_list.append(segment_data)
+        index += 1 
 
+    # 데이터베이스에 추가
+        insert_stt_result_data(data_list)
+    return data_list
 
-def validate_file_path(file_path):
-    if '\0' in file_path:
-        raise ValueError("File path contains an embedded null byte")
-    return file_path
+    
 
-def read_file_safely(file_path):
-    validated_path = validate_file_path(file_path)
-    with open(validated_path, 'rb') as file:
-        data = file.read()
-        # NULL 바이트 검사
-        if b'\0' in data:
-            raise ValueError("File contains an embedded null byte")
-        return data
