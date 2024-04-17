@@ -55,10 +55,10 @@ async def create_upload_file(
         insert_file_metadata(metadata)
         
         # stt_results 함수를 백그라운드 작업으로 추가
-        stt_response(clova_client, file_path, file_id)
+        stt = stt_response(clova_client, file_path, file_id)
 
 
-        return stt_response
+        return stt
 
     except Exception as e:
         print(f"Error occurred: {e}")
