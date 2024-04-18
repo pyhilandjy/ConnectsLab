@@ -15,30 +15,6 @@ app = FastAPI()
 def get_clova_client():
     return ClovaSpeechClient()
 
-# @router.post("/uploadfile/", tags=["Audio"])
-# async def create_upload_file(
-#     background_tasks: BackgroundTasks,
-#     user_id: str = Form(...), 
-#     file: UploadFile = File(...),
-#     clova_client: ClovaSpeechClient = Depends(get_clova_client)
-# ):
-#     try:
-#         file_id = gen_file_id(user_id)
-#         file_path = gen_file_path(file_id)
-#         await save_file(file, file_path)
-        
-#         metadata = create_metadata(file_id, user_id, file.filename, file_path)
-#         insert_file_metadata(metadata)
-        
-#         # 인스턴스를 통한 req_upload 메소드 호출
-#         segments = await stt_results(clova_client, file_path)
-
-#         return segments
-
-#     except Exception as e:
-#         print(f"Error occurred: {e}")
-#         raise HTTPException(status_code=500, detail=f"Failed to upload file: {str(e)}")
-
 @router.post("/uploadfile/", tags=["Audio"])
 async def create_upload_file(
     background_tasks: BackgroundTasks,
@@ -54,15 +30,40 @@ async def create_upload_file(
         metadata = create_metadata(file_id, user_id, file.filename, file_path)
         insert_file_metadata(metadata)
         
-        # stt_results 함수를 백그라운드 작업으로 추가
-        stt = stt_response(clova_client, file_path, file_id)
+        # 인스턴스를 통한 req_upload 메소드 호출
+        data_list = await stt_response(clova_client, file_path, file_id)
+        
+        return data_list
 
-
-        return stt
 
     except Exception as e:
         print(f"Error occurred: {e}")
         raise HTTPException(status_code=500, detail=f"Failed to upload file: {str(e)}")
+
+# @router.post("/uploadfile/", tags=["Audio"])
+# async def create_upload_file(
+#     background_tasks: BackgroundTasks,
+#     user_id: str = Form(...), 
+#     file: UploadFile = File(...),
+#     clova_client: ClovaSpeechClient = Depends(get_clova_client)
+# ):
+#     try:
+#         file_id = gen_file_id(user_id)
+#         file_path = gen_file_path(file_id)
+#         await save_file(file, file_path)
+        
+#         metadata = create_metadata(file_id, user_id, file.filename, file_path)
+#         insert_file_metadata(metadata)
+        
+#         # stt_results 함수를 백그라운드 작업으로 추가
+#         stt = stt_response(clova_client, file_path, file_id)
+
+
+#         return stt
+
+#     except Exception as e:
+#         print(f"Error occurred: {e}")
+#         raise HTTPException(status_code=500, detail=f"Failed to upload file: {str(e)}")
 
 async def save_file(file: UploadFile, file_path: str):
     with open(file_path, "wb") as buffer:
@@ -131,9 +132,12 @@ async def stt_response(clova_client, file_path, file_id):
         data_list.append(segment_data)
         index += 1 
 
-    # 데이터베이스에 추가
-        insert_stt_result_data(data_list)
+        insert_stt_result_data([segment_data])  # 리스트로 감싸주어야 합니다.
+
+
     return data_list
+
+
 
     
 

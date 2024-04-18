@@ -19,9 +19,18 @@ FROM users
     """
 )
 
+SELECT_FILES = text(
+    """
+SELECT *
+FROM files f
+WHERE f.user_id = :user_id
+"""
+)
+
+
 INSERT_STT_RESULT_DATA = text(
     """
-INSERT INTO files (file_id, index, start_time, end_time, text, confidence, speaker_label, text_edited, created_at) VALUES 
+INSERT INTO stt_results (file_id, index, start_time, end_time, text, confidence, speaker_label, text_edited, created_at) VALUES 
 (
     :file_id, 
     :index,
@@ -32,5 +41,12 @@ INSERT INTO files (file_id, index, start_time, end_time, text, confidence, speak
     :speaker_label,
     :text_edited,
     current_timestamp)
+    """
+)
+
+SELECT_STT_RESULTS = text(
+    """
+SELECT *
+FROM stt_results
     """
 )
