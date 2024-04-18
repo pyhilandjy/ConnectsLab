@@ -28,8 +28,9 @@ def send_file(file, user_id):
     return response
 
 
-def get_stt_results():
-    response = requests.get(backend_url + "/stt/")
+def get_stt_results(file_id):
+    data = {"file_id": file_id}
+    response = requests.post(url=backend_url + "/stt/", json=data)
     if response.status_code == 200:
         return response.json()
     else:

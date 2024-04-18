@@ -47,6 +47,8 @@ INSERT INTO stt_results (file_id, index, start_time, end_time, text, confidence,
 SELECT_STT_RESULTS = text(
     """
 SELECT *
-FROM stt_results
+FROM stt_results sr
+WHERE sr.file_id = :file_id
+ORDER BY sr.index asc
     """
 )

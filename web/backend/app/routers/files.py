@@ -13,7 +13,9 @@ class FileModel(BaseModel):
 
 @router.post("/", tags=["Files"])
 async def get_files(file_model: FileModel):
-    """123"""
+    """
+    files 데이터를 가져오는 엔드포인트
+    params = user_id"""
 
     files = execute_select_query(
         query=SELECT_FILES, params={"user_id": file_model.user_id}

@@ -1,38 +1,54 @@
-import requests #naver CLOVA Speech API
-import json     #naver CLOVA Speech API
+import requests  # naver CLOVA Speech API
+import json  # naver CLOVA Speech API
 from datetime import datetime, timedelta
 import pandas as pd
 
 
-class ClovaSpeechClient:
+class ClovaApiClient:
     # Clova Speech invoke URL
-    invoke_url = 'https://clovaspeech-gw.ncloud.com/external/v1/6542/2a76879d93ca2fd6fc6fcf7cdc1cdf1888f7487dbff7c21c5a0ab0d655659361'
+    invoke_url = "https://clovaspeech-gw.ncloud.com/external/v1/6542/2a76879d93ca2fd6fc6fcf7cdc1cdf1888f7487dbff7c21c5a0ab0d655659361"
     # Clova Speech secret key
-    secret = 'e528cad5fdc14d84808b304e6eb77b35'
+    secret = "e528cad5fdc14d84808b304e6eb77b35"
 
-    def req_upload(self, file, completion='sync', callback=None, userdata=None, forbiddens=None, boostings=None,
-                   wordAlignment=True, fullText=True, diarization=None):
+    def request_stt(
+        self,
+        file_path,
+        completion="sync",
+        callback=None,
+        userdata=None,
+        forbiddens=None,
+        boostings=None,
+        wordAlignment=True,
+        fullText=True,
+        diarization=None,
+    ):
         request_body = {
-            'language': 'ko-KR',
-            'completion': completion,
-            'callback': callback,
-            'userdata': userdata,
-            'wordAlignment': wordAlignment,
-            'fullText': fullText,
-            'forbiddens': forbiddens,
-            'boostings': boostings,
-            'diarization': diarization,
+            "language": "ko-KR",
+            "completion": completion,
+            "callback": callback,
+            "userdata": userdata,
+            "wordAlignment": wordAlignment,
+            "fullText": fullText,
+            "forbiddens": forbiddens,
+            "boostings": boostings,
+            "diarization": diarization,
         }
         headers = {
-            'Accept': 'application/json;UTF-8',
-            'X-CLOVASPEECH-API-KEY': self.secret
+            "Accept": "application/json;UTF-8",
+            "X-CLOVASPEECH-API-KEY": self.secret,
         }
-        print(json.dumps(request_body, ensure_ascii=False).encode('UTF-8'))
+        print(json.dumps(request_body, ensure_ascii=False).encode("UTF-8"))
         files = {
-            'media': open(file, 'rb'),
-            'params': (None, json.dumps(request_body, ensure_ascii=False).encode('UTF-8'), 'application/json')
+            "media": open(file_path, "rb"),
+            "params": (
+                None,
+                json.dumps(request_body, ensure_ascii=False).encode("UTF-8"),
+                "application/json",
+            ),
         }
-        response = requests.post(headers=headers, url=self.invoke_url + '/recognizer/upload', files=files)
+        response = requests.post(
+            headers=headers, url=self.invoke_url + "/recognizer/upload", files=files
+        )
         return response
 
 
@@ -107,18 +123,17 @@ class ClovaSpeechClient:
 #     df = pd.DataFrame(data)
 
 
-
 # def get_m4a_files_in_folder(folder_path, start_with_beforeday=False):
 #     """ 전날의 .m4a파일을 불러오는 함수"""
 #     yesterday = datetime.now() - timedelta(days=1)
 #     yesterday = yesterday.strftime("%y%m%d")
 
 #     files = [os.path.join(folder_path, file) for file in os.listdir(folder_path) if file.endswith('.m4a')]
-    
+
 #     if start_with_beforeday:
 #         filtered_files = [file for file in files if os.path.basename(file).startswith(yesterday)]
 #         return filtered_files
-    
+
 #     return files
 
 # def STT():
@@ -131,7 +146,7 @@ class ClovaSpeechClient:
 
 #     # 각 파일에 대해 처리
 #     for audio_file in m4a_files:
-#         user_info = extract_last_part(audio_file) 
+#         user_info = extract_last_part(audio_file)
 #         base_filename = f"{user_info}_"
 
 #         res = ClovaSpeechClient().req_upload(file=audio_file, completion='sync')
@@ -157,4 +172,3 @@ class ClovaSpeechClient:
 
 #         df = pd.DataFrame(data_list, columns=['user_id', 'user_name', 'start_time', 'end_time', 'text', 'confidence', 'speaker_label', 'text_edited', 'date'])
 #     to_db(table = 'STT', df = df)
-
