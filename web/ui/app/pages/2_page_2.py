@@ -23,7 +23,7 @@ def page_2():
 
             selected_file_id = st.selectbox(
                 "파일 id",
-                get_files_ids(selected_user_id),
+                get_files_ids(selected_user_id[0]),
                 placeholder="Select file_id",
             )
             stt_result = get_stt_results(selected_file_id)
