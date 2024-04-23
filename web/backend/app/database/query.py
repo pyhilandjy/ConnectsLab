@@ -52,3 +52,15 @@ WHERE sr.file_id = :file_id
 ORDER BY sr.index asc
     """
 )
+
+
+SELECT_STT_RESULTS_WORDCLOUD = text(
+    """
+    SELECT sr.*
+    FROM stt_results sr
+    JOIN files f ON sr.file_id = f.id
+    WHERE f.user_id = :user_id
+        AND sr.created_at BETWEEN :start_date AND :end_date
+    ORDER BY sr.created_at ASC, sr.index ASC
+    """
+)

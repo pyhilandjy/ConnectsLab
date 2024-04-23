@@ -26,32 +26,8 @@ app = FastAPI()
 # ClovaSpeechClient()
 
 
-@router.post("/uploadfile/", tags=["Audio"])
-async def create_upload_file(user_id: str = Form(...), file: UploadFile = File(...)):
-    try:
-        file_id = gen_file_id(user_id)
-        file_path = gen_file_path(file_id)
-        await save_file(file, file_path)
-
-        metadata = create_metadata(file_id, user_id, file.filename, file_path)
-        insert_file_metadata(metadata)
-
-        segments = get_stt_results(file_path)
-
-        return insert_stt_segments(segments, file_id)
-
-    except Exception as e:
-        print(f"Error occurred: {e}")
-        raise HTTPException(status_code=500, detail=f"Failed to upload file: {str(e)}")
-
-
 # @router.post("/uploadfile/", tags=["Audio"])
-# async def create_upload_file(
-#     background_tasks: BackgroundTasks,
-#     user_id: str = Form(...),
-#     file: UploadFile = File(...),
-#     clova_client: ClovaSpeechClient = Depends(get_clova_client)
-# ):
+# async def create_upload_file(user_id: str = Form(...), file: UploadFile = File(...)):
 #     try:
 #         file_id = gen_file_id(user_id)
 #         file_path = gen_file_path(file_id)
@@ -60,12 +36,40 @@ async def create_upload_file(user_id: str = Form(...), file: UploadFile = File(.
 #         metadata = create_metadata(file_id, user_id, file.filename, file_path)
 #         insert_file_metadata(metadata)
 
-#         # stt_results 함수를 백그라운드 작업으로 추가
-#         stt = stt_response(clova_client, file_path, file_id)
+#         segments = get_stt_results(file_path)
 
-
-#         return stt
+#         return insert_stt_segments(segments, file_id)
 
 #     except Exception as e:
 #         print(f"Error occurred: {e}")
 #         raise HTTPException(status_code=500, detail=f"Failed to upload file: {str(e)}")
+
+
+from fastapi import BackgroundTasks
+
+
+@router.post("/uploadfile/", tags=["Audio"])
+async def create_upload_file(
+    background_tasks: BackgroundTasks,
+    user_id: str = Form(...),
+    file: UploadFile = File(...),
+):
+    try:
+        file_id = gen_file_id(user_id)
+        file_path = gen_file_path(file_id)
+        await save_file(file, file_path)
+
+        metadata = create_metadata(file_id, user_id, file.filename, file_path)
+        insert_file_metadata(metadata)
+
+        # 백그라운드 태스크로 STT 처리 및 결과 삽입
+        background_tasks.add_task(process_stt_and_insert, file_path, file_id)
+
+        return {"message": "File uploaded and processing started in the background."}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+async def process_stt_and_insert(file_path, file_id):
+    segments = get_stt_results(file_path)  # STT 결과를 가져옵니다.
+    return insert_stt_segments(segments, file_id)

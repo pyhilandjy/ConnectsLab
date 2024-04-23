@@ -14,6 +14,9 @@ uvicorn = "^0.29.0"
 pydantic-settings = "^2.2.1"
 pandas = "^2.2.2"
 requests = "^2.31.0"
+wordcloud = "^1.9.3"
+konlpy = "^0.6.0"
+mecab-ko = "^1.0.1"
 
 [build-system]
 requires = ["poetry-core"]

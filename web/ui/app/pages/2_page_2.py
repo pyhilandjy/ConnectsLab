@@ -1,7 +1,7 @@
 import streamlit as st
 import pandas as pd
-from request import get_stt_results
-from helper import get_users_ids, get_files_ids, get_users_ids_name
+from request import get_stt_results_by_file_id
+from helper import get_files_ids, get_users_ids_name
 
 
 def page_2():
@@ -13,7 +13,6 @@ def page_2():
 
     with col_1:
         # 회원 아이디 불러오는 함수
-
         selected_user_id = st.selectbox("회원 아이디 선택", get_users_ids_name())
 
     with col_2:
@@ -26,7 +25,7 @@ def page_2():
                 get_files_ids(selected_user_id[0]),
                 placeholder="Select file_id",
             )
-            stt_result = get_stt_results(selected_file_id)
+            stt_result = get_stt_results_by_file_id(selected_file_id)
             stt_result = pd.DataFrame(stt_result)
     st.dataframe(stt_result)
 

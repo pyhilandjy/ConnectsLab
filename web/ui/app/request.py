@@ -28,9 +28,22 @@ def send_file(file, user_id):
     return response
 
 
-def get_stt_results(file_id):
+def get_stt_results_by_file_id(file_id):
     data = {"file_id": file_id}
-    response = requests.post(url=backend_url + "/stt/", json=data)
+    response = requests.post(
+        url=backend_url + "/stt/stt-results-by-file_id/", json=data
+    )
+    if response.status_code == 200:
+        return response.json()
+    else:
+        return []
+
+
+def get_stt_results_by_user_id(user_id):
+    data = {"file_id": user_id}
+    response = requests.post(
+        url=backend_url + "/stt/stt-results-by-user_id/", json=data
+    )
     if response.status_code == 200:
         return response.json()
     else:
