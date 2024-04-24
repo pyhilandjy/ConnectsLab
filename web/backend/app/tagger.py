@@ -1,10 +1,3 @@
-# import warnings
-# import logging
-
-# warnings.filterwarnings("ignore")
-# warnings.simplefilter("ignore")
-# logging.warning("ignore")
-
 import numpy as np
 
 # from khaiii import KhaiiiApi
@@ -23,58 +16,40 @@ class Tagger:
     def morphs(self, text):
         return self.tagger.morphs(text)
 
+    # def remove_josa(self, text):
+    #     """
+    #     Removes not-so-useful morphs from the text.
+    #     :param text:
+    #     :return:
+    #     """
+    #     string = ""
+    #     for word in self.khaiii.analyze(text):
+    #         word_list = str(word).split()
+    #         if "+" in word_list:
+    #             for w in word_list[1:]:
+    #                 if w == "+":
+    #                     continue
+    #                 josa_byebye = w.split("/")
+    #                 if (
+    #                     josa_byebye[1].startswith("J")
+    #                     or josa_byebye[1].startswith("E")
+    #                     or josa_byebye[1].startswith("X")
+    #                 ):
+    #                     continue
+    #                 if josa_byebye[1].startswith("VX") or josa_byebye[1].startswith(
+    #                     "S"
+    #                 ):
+    #                     continue
+    #                 else:
+    #                     if len(w.split("/")[0]) == 1:
+    #                         continue
+    #                     string += f"{w.split('/')[0]} "
+    #         else:
+    #             if len(word_list[0]) == 1:
+    #                 continue
+    #             string += f"{word_list[0]} "
 
-class KhaiiiWordCloud:
-    def __init__(self, stt_wordcloud):
-        self.df = stt_wordcloud
-        if "발화자" in self.df.columns:
-            self.speaker_col_name = "발화자"
-        elif "speaker_label" in self.df.columns:
-            self.speaker_col_name = "speaker_label"
-
-        if "내용" in self.df.columns:
-            self.contents_col_name = "내용"
-        elif "text_edited" in self.df.columns:
-            self.contents_col_name = "text_edited"
-
-        # self.num_speakers = 0
-        self.khaiii = KhaiiiApi()
-        self.font_path = "NanumFontSetup_TTF_GOTHIC/NanumGothic.ttf"
-
-    def remove_josa(self, text):
-        """
-        Removes not-so-useful morphs from the text.
-        :param text:
-        :return:
-        """
-        string = ""
-        for word in self.khaiii.analyze(text):
-            word_list = str(word).split()
-            if "+" in word_list:
-                for w in word_list[1:]:
-                    if w == "+":
-                        continue
-                    josa_byebye = w.split("/")
-                    if (
-                        josa_byebye[1].startswith("J")
-                        or josa_byebye[1].startswith("E")
-                        or josa_byebye[1].startswith("X")
-                    ):
-                        continue
-                    if josa_byebye[1].startswith("VX") or josa_byebye[1].startswith(
-                        "S"
-                    ):
-                        continue
-                    else:
-                        if len(w.split("/")[0]) == 1:
-                            continue
-                        string += f"{w.split('/')[0]} "
-            else:
-                if len(word_list[0]) == 1:
-                    continue
-                string += f"{word_list[0]} "
-
-        return string.strip()
+    #     return string.strip()
 
     def names_dict(self):
         """

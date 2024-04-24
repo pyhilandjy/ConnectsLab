@@ -1,5 +1,7 @@
 import streamlit as st
 import requests
+from PIL import Image
+import io
 
 backend_url = st.secrets["backend_url"]
 
@@ -39,12 +41,10 @@ def get_stt_results_by_file_id(file_id):
         return []
 
 
-def get_stt_results_by_user_id(user_id):
-    data = {"file_id": user_id}
-    response = requests.post(
-        url=backend_url + "/stt/stt-results-by-user_id/", json=data
-    )
+def get_wordcloud(user_id, start_date, end_date):
+    data = {"user_id": user_id, "start_date": start_date, "end_date": end_date}
+    response = requests.post(url=backend_url + "/stt/stt-results-wordcloud/", json=data)
     if response.status_code == 200:
-        return response.json()
+        return Image.open(io.BytesIO(response.content))
     else:
         return []
