@@ -48,3 +48,13 @@ CREATE TABLE plans
     created_at timestamp NOT NULL DEFAULT current_timestamp,
     PRIMARY KEY (id)
 );
+
+CREATE TABLE image_file
+(
+    id varchar(255) NOT NULL,
+    user_id varchar(255) NOT NULL,
+    start_date timestamp NOT NULL,
+    end_date timestamp NOT null,
+    image_path varchar(255) NOT NULL,
+    PRIMARY KEY (id)
+);

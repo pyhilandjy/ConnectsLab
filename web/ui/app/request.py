@@ -45,6 +45,8 @@ def get_wordcloud(user_id, start_date, end_date):
     data = {"user_id": user_id, "start_date": start_date, "end_date": end_date}
     response = requests.post(url=backend_url + "/stt/stt-results-wordcloud/", json=data)
     if response.status_code == 200:
-        return Image.open(io.BytesIO(response.content))
+        image_path = response.json()
+        return image_path
     else:
-        return []
+        st.error("Failed to generate wordcloud")
+        return None

@@ -1,20 +1,26 @@
-from pytz import timezone
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 from wordcloud import WordCloud
 from fastapi import UploadFile
+from pydantic import BaseModel
 
 import mecab_ko as MeCab
 from collections import Counter
 from io import BytesIO
+import os
 
 
-from datetime import datetime
+from datetime import datetime, date
 import json
 
-from app.database.query import INSERT_FILE_META_DATA, INSERT_STT_RESULT_DATA
-from app.database.worker import execute_insert_update_query_single
+from app.database.query import (
+    INSERT_AUDIO_FILE_META_DATA,
+    INSERT_STT_RESULT_DATA,
+    INSERT_IMAGE_FILE_META_DATA,
+    SELECT_STT_RESULTS_WORDCLOUD,
+)
+from app.database.worker import execute_insert_update_query_single, execute_select_query
 from app.routers.function.clova_function import ClovaApiClient
 
 SPEAKER_COL_NAME = "speaker_label"
@@ -33,7 +39,7 @@ POS_TAG_TO_KOREAN = {
 }
 
 
-async def save_file(file: UploadFile, file_path: str):
+async def save_audio_file(file: UploadFile, file_path: str):
     with open(file_path, "wb") as buffer:
         while True:
             data = await file.read(1048576)  # 1MB
@@ -42,15 +48,17 @@ async def save_file(file: UploadFile, file_path: str):
             buffer.write(data)
 
 
-def gen_file_id(user_id: str):
+def gen_audio_file_id(user_id: str):
     return datetime.now().strftime("%y%m%d%H%M%S") + "_" + user_id
 
 
-def gen_file_path(file_id: str):
+def gen_audio_file_path(file_id: str):
+    """파일경로 생성"""
+    # 존재하지 않을 경우 mkdir 기능 추가해야함
     return f"./app/audio/{file_id}.m4a"
 
 
-def create_metadata(file_id: str, user_id: str, file_name: str, file_path: str):
+def create_audio_metadata(file_id: str, user_id: str, file_name: str, file_path: str):
     return {
         "file_id": file_id,
         "user_id": user_id,
@@ -59,8 +67,10 @@ def create_metadata(file_id: str, user_id: str, file_name: str, file_path: str):
     }
 
 
-def insert_file_metadata(metadata: dict):
-    execute_insert_update_query_single(query=INSERT_FILE_META_DATA, params=metadata)
+def insert_audio_file_metadata(metadata: dict):
+    execute_insert_update_query_single(
+        query=INSERT_AUDIO_FILE_META_DATA, params=metadata
+    )
 
 
 def insert_stt_result_data(data_list):
@@ -229,24 +239,23 @@ def generate_wordcloud(word_counts, font_path, mask):
     return wc
 
 
-def display_wordcloud(wordcloud, title):
-    """워드클라우드 표시 세팅"""
+def save_wordcloud(wordcloud, image_path):
+    """워드클라우드를 파일로 저장"""
     plt.figure(figsize=(10, 10))
     plt.imshow(wordcloud, interpolation="bilinear")
     plt.axis("off")
-    plt.title(title)
-    buffer = BytesIO()
-    plt.savefig(buffer, format="PNG")
-    # plt.show()
-    # plt.close()
-    # buffer.seek(0)
-    return plt.show()
+    plt.savefig(image_path, format="PNG")  # 이미지 파일로 저장
+    plt.close()
 
 
-def create_wordcloud(stt_wordcloud, font_path=FONT_PATH):
-    """워드클라우드 생성"""
+def create_wordcloud(stt_wordcloud, font_path, user_id, start_date, end_date, type):
+    """워드클라우드 생성 및 파일로 저장"""
     if not isinstance(stt_wordcloud, pd.DataFrame):
         stt_wordcloud = pd.DataFrame(stt_wordcloud)
+
+    start_date = start_date.strftime("%Y-%m-%d")
+    end_date = end_date.strftime("%Y-%m-%d")
+
     for speaker in stt_wordcloud["speaker_label"].unique():
         speaker_data = stt_wordcloud[stt_wordcloud["speaker_label"] == speaker]
         text = " ".join(speaker_data["text_edited"].astype(str))
@@ -254,7 +263,75 @@ def create_wordcloud(stt_wordcloud, font_path=FONT_PATH):
         word_counts = count_words(nouns)
         mask = create_circle_mask()
         wordcloud = generate_wordcloud(word_counts, font_path, mask)
-        display_wordcloud(wordcloud, f"WordCloud for Speaker {speaker}")
+
+        image_id = gen_image_file_id(user_id, speaker, start_date, end_date, type)
+
+        # 파일 경로 생성
+        image_path = gen_wordcloud_file_path(
+            user_id,
+            speaker,
+            start_date,
+            end_date,
+            type,
+        )
+
+        metadata = create_image_metadata(
+            image_id=image_id,
+            user_id=user_id,
+            speaker=speaker,
+            start_date=start_date,
+            end_date=end_date,
+            type=type,
+            image_path=image_path,
+        )
+        insert_image_file_metadata(metadata)
+        # 워드클라우드 저장
+        save_wordcloud(wordcloud, image_path)
+    return image_path
 
 
 #################워드클라우드#################
+
+
+# image file data
+def gen_image_file_id(
+    user_id: str, speaker: str, start_date: date, end_date: date, type: str
+) -> str:
+    """이미지 파일 아이디 생성"""
+    return f"{user_id}_{speaker}_{start_date}_{end_date}_{type}"
+
+
+def gen_wordcloud_file_path(
+    user_id: str, speaker: str, start_date: date, end_date: date, type: str
+):
+    """이미지 파일경로 생성"""
+    directory = f"../backend/app/image"
+    if not os.path.exists(directory):
+        os.makedirs(directory)
+    return f"{directory}/{user_id}_{speaker}_{start_date}_{end_date}_{type}.png"
+
+
+def create_image_metadata(
+    image_id: str,
+    speaker: str,
+    user_id: str,
+    start_date: date,
+    end_date: date,
+    type: str,
+    image_path: str,
+):
+    return {
+        "image_id": image_id,
+        "speaker": speaker,
+        "user_id": user_id,
+        "start_date": start_date,
+        "end_date": end_date,
+        "type": type,
+        "image_path": image_path,
+    }
+
+
+def insert_image_file_metadata(metadata: dict):
+    execute_insert_update_query_single(
+        query=INSERT_IMAGE_FILE_META_DATA, params=metadata
+    )

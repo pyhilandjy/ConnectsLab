@@ -1,6 +1,6 @@
 from sqlalchemy import text
 
-INSERT_FILE_META_DATA = text(
+INSERT_AUDIO_FILE_META_DATA = text(
     """
 INSERT INTO files (id, user_id, file_name, file_path, created_at) VALUES 
 (
@@ -9,6 +9,20 @@ INSERT INTO files (id, user_id, file_name, file_path, created_at) VALUES
     :file_name,
     :file_path,
     current_timestamp)
+    """
+)
+
+INSERT_IMAGE_FILE_META_DATA = text(
+    """
+INSERT INTO image_file (id, speaker, user_id, start_date, end_date, image_path, type) VALUES 
+(
+    :image_id, 
+    :speaker,
+    :user_id,
+    :start_date,
+    :end_date,
+    :image_path,
+    :type)
     """
 )
 

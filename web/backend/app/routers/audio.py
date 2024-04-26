@@ -9,11 +9,11 @@ from fastapi import (
 )
 
 from app.services import (
-    save_file,
-    gen_file_id,
-    gen_file_path,
-    create_metadata,
-    insert_file_metadata,
+    save_audio_file,
+    gen_audio_file_id,
+    gen_audio_file_path,
+    create_audio_metadata,
+    insert_audio_file_metadata,
     get_stt_results,
     insert_stt_segments,
 )
@@ -55,12 +55,12 @@ async def create_upload_file(
     file: UploadFile = File(...),
 ):
     try:
-        file_id = gen_file_id(user_id)
-        file_path = gen_file_path(file_id)
-        await save_file(file, file_path)
+        file_id = gen_audio_file_id(user_id)
+        file_path = gen_audio_file_path(file_id)
+        await save_audio_file(file, file_path)
 
-        metadata = create_metadata(file_id, user_id, file.filename, file_path)
-        insert_file_metadata(metadata)
+        metadata = create_audio_metadata(file_id, user_id, file.filename, file_path)
+        insert_audio_file_metadata(metadata)
 
         # 백그라운드 태스크로 STT 처리 및 결과 삽입
         background_tasks.add_task(process_stt_and_insert, file_path, file_id)

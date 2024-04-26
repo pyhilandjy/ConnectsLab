@@ -1,11 +1,10 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Form, File
 from pydantic import BaseModel
-from datetime import datetime, date
-from fastapi.responses import StreamingResponse
+from datetime import date
 
 from app.database.query import SELECT_STT_RESULTS, SELECT_STT_RESULTS_WORDCLOUD
 from app.database.worker import execute_select_query
-from app.services import create_wordcloud
+from app.services import create_wordcloud, FONT_PATH
 
 router = APIRouter()
 
@@ -34,8 +33,8 @@ class WordcloudModel(BaseModel):
 
 
 @router.post("/stt-results-wordcloud/", tags=["stt_results"])
-async def wordcloud(wordcloud_model: WordcloudModel):
-    """워드클라우드를 위한 stt result를 가져오는 엔드포인트"""
+async def generate_wordcloud(wordcloud_model: WordcloudModel):
+    """워드클라우드를 위한 STT 결과를 가져오는 엔드포인트"""
     stt_wordcloud = execute_select_query(
         query=SELECT_STT_RESULTS_WORDCLOUD,
         params={
@@ -51,6 +50,14 @@ async def wordcloud(wordcloud_model: WordcloudModel):
             detail="No STT results found for the specified user and date range.",
         )
 
-    # return stt_wordcloud
-    buffer = create_wordcloud(stt_wordcloud)
-    return StreamingResponse(buffer, media_type="image/png")
+    user_id = wordcloud_model.user_id
+    start_date = wordcloud_model.start_date
+    end_date = wordcloud_model.end_date
+    font_path = FONT_PATH
+
+    # 워드클라우드 생성 및 이미지 저장
+    type = "wordcloud"
+    image_path = create_wordcloud(
+        stt_wordcloud, font_path, user_id, start_date, end_date, type
+    )
+    return image_path
