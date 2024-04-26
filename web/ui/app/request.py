@@ -41,6 +41,37 @@ def get_stt_results_by_file_id(file_id):
         return []
 
 
+def get_image_files(user_id, start_date, end_date, type):
+    data = {
+        "user_id": user_id,
+        "start_date": start_date,
+        "end_date": end_date,
+        "type": type,
+    }
+    response = requests.post(
+        url=backend_url + "/stt/stt-results/image_file/", json=data
+    )
+    if response.status_code == 200:
+        return response.json()
+    else:
+        return []
+
+
+def get_image_types(user_id, start_date, end_date):
+    data = {
+        "user_id": user_id,
+        "start_date": start_date,
+        "end_date": end_date,
+    }
+    response = requests.post(
+        url=backend_url + "/stt/stt-results/image_type/", json=data
+    )
+    if response.status_code == 200:
+        return response.json()
+    else:
+        return []
+
+
 def get_wordcloud(user_id, start_date, end_date):
     data = {"user_id": user_id, "start_date": start_date, "end_date": end_date}
     response = requests.post(url=backend_url + "/stt/stt-results-wordcloud/", json=data)

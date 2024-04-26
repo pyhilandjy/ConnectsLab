@@ -17,8 +17,7 @@ import json
 from app.database.query import (
     INSERT_AUDIO_FILE_META_DATA,
     INSERT_STT_RESULT_DATA,
-    INSERT_IMAGE_FILE_META_DATA,
-    SELECT_STT_RESULTS_WORDCLOUD,
+    INSERT_IMAGE_FILES_META_DATA,
 )
 from app.database.worker import execute_insert_update_query_single, execute_select_query
 from app.routers.function.clova_function import ClovaApiClient
@@ -253,8 +252,8 @@ def create_wordcloud(stt_wordcloud, font_path, user_id, start_date, end_date, ty
     if not isinstance(stt_wordcloud, pd.DataFrame):
         stt_wordcloud = pd.DataFrame(stt_wordcloud)
 
-    start_date = start_date.strftime("%Y-%m-%d")
-    end_date = end_date.strftime("%Y-%m-%d")
+    f_start_date = start_date.strftime("%Y-%m-%d")
+    f_end_date = end_date.strftime("%Y-%m-%d")
 
     for speaker in stt_wordcloud["speaker_label"].unique():
         speaker_data = stt_wordcloud[stt_wordcloud["speaker_label"] == speaker]
@@ -264,14 +263,14 @@ def create_wordcloud(stt_wordcloud, font_path, user_id, start_date, end_date, ty
         mask = create_circle_mask()
         wordcloud = generate_wordcloud(word_counts, font_path, mask)
 
-        image_id = gen_image_file_id(user_id, speaker, start_date, end_date, type)
+        image_id = gen_image_file_id(user_id, speaker, f_start_date, f_end_date, type)
 
         # 파일 경로 생성
         image_path = gen_wordcloud_file_path(
             user_id,
             speaker,
-            start_date,
-            end_date,
+            f_start_date,
+            f_end_date,
             type,
         )
 
@@ -298,7 +297,7 @@ def gen_image_file_id(
     user_id: str, speaker: str, start_date: date, end_date: date, type: str
 ) -> str:
     """이미지 파일 아이디 생성"""
-    return f"{user_id}_{speaker}_{start_date}_{end_date}_{type}"
+    return f"{user_id}_{speaker}_{start_date}_{end_date}_{type}.png"
 
 
 def gen_wordcloud_file_path(
@@ -333,5 +332,5 @@ def create_image_metadata(
 
 def insert_image_file_metadata(metadata: dict):
     execute_insert_update_query_single(
-        query=INSERT_IMAGE_FILE_META_DATA, params=metadata
+        query=INSERT_IMAGE_FILES_META_DATA, params=metadata
     )

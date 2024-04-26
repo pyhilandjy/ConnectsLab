@@ -12,9 +12,9 @@ INSERT INTO files (id, user_id, file_name, file_path, created_at) VALUES
     """
 )
 
-INSERT_IMAGE_FILE_META_DATA = text(
+INSERT_IMAGE_FILES_META_DATA = text(
     """
-INSERT INTO image_file (id, speaker, user_id, start_date, end_date, image_path, type) VALUES 
+INSERT INTO image_files (id, speaker, user_id, start_date, end_date, image_path, type) VALUES 
 (
     :image_id, 
     :speaker,
@@ -77,4 +77,25 @@ SELECT_STT_RESULTS_WORDCLOUD = text(
         AND sr.created_at BETWEEN :start_date AND :end_date
     ORDER BY sr.created_at ASC, sr.index ASC
     """
+)
+
+SELECT_IMAGE_FILES = text(
+    """
+SELECT id
+FROM image_files imf
+WHERE imf.user_id = :user_id 
+  AND imf.start_date = :start_date
+  AND imf.end_date = :end_date
+  AND imf.type = :type;
+"""
+)
+
+SELECT_IMAGE_TYPE = text(
+    """
+SELECT DISTINCT type
+FROM image_files
+WHERE user_id = :user_id
+  AND start_date = :start_date
+  AND end_date = :end_date;
+"""
 )
