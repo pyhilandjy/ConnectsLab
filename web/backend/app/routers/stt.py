@@ -8,12 +8,12 @@ import os
 
 from app.database.query import (
     SELECT_STT_RESULTS,
-    SELECT_STT_RESULTS_WORDCLOUD,
+    SELECT_STT_RESULTS_FOR_IMAGE,
     SELECT_IMAGE_FILES,
     SELECT_IMAGE_TYPE,
 )
 from app.database.worker import execute_select_query
-from app.services.gen_wordcloud import create_wordcloud, FONT_PATH
+from app.services.gen_wordcloud import create_wordcloud, FONT_PATH, aaa
 
 router = APIRouter()
 
@@ -22,7 +22,7 @@ class FileModel(BaseModel):
     file_id: str
 
 
-class WordcloudModel(BaseModel):
+class ImageModel(BaseModel):
     user_id: str
     start_date: date
     end_date: date
@@ -55,14 +55,14 @@ async def get_stt_results_by_file_id(stt_model: FileModel):
 
 
 @router.post("/create-wordcloud/", tags=["stt_results"])
-async def generate_wordcloud(wordcloud_model: WordcloudModel):
+async def generate_wordcloud(image_model: ImageModel):
     """워드클라우드를 생성하여 이미지 반환하는 엔드포인트(현재 2개의 파일은 보여지는것 구현x)"""
     stt_wordcloud = execute_select_query(
-        query=SELECT_STT_RESULTS_WORDCLOUD,
+        query=SELECT_STT_RESULTS_FOR_IMAGE,
         params={
-            "user_id": wordcloud_model.user_id,
-            "start_date": wordcloud_model.start_date,
-            "end_date": wordcloud_model.end_date,
+            "user_id": image_model.user_id,
+            "start_date": image_model.start_date,
+            "end_date": image_model.end_date,
         },
     )
 
@@ -72,9 +72,9 @@ async def generate_wordcloud(wordcloud_model: WordcloudModel):
             detail="No STT results found for the specified user and date range.",
         )
 
-    user_id = wordcloud_model.user_id
-    start_date = wordcloud_model.start_date
-    end_date = wordcloud_model.end_date
+    user_id = image_model.user_id
+    start_date = image_model.start_date
+    end_date = image_model.end_date
     font_path = FONT_PATH
 
     # 워드클라우드 생성 및 이미지 저장
@@ -139,3 +139,23 @@ async def get_image_type(imagetypemodel: ImagetypeModel):
         raise HTTPException(status_code=404, detail="type not found")
 
     return image_type
+
+
+@router.post("/create-violin_chart/", tags=["violin_chart"])
+async def generate_violin_chart(image_model: ImageModel):
+    """워드클라우드를 생성하여 이미지 반환하는 엔드포인트(현재 2개의 파일은 보여지는것 구현x)"""
+    stt_violin_chart = execute_select_query(
+        query=SELECT_STT_RESULTS_FOR_IMAGE,
+        params={
+            "user_id": image_model.user_id,
+            "start_date": image_model.start_date,
+            "end_date": image_model.end_date,
+        },
+    )
+
+    if not stt_violin_chart:
+        raise HTTPException(
+            status_code=404,
+            detail="No STT results found for the specified user and date range.",
+        )
+    aaa(stt_violin_chart)

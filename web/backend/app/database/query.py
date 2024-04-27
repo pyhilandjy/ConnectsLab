@@ -68,7 +68,7 @@ ORDER BY sr.index asc
 )
 
 
-SELECT_STT_RESULTS_WORDCLOUD = text(
+SELECT_STT_RESULTS_FOR_IMAGE = text(
     """
     SELECT sr.*
     FROM stt_results sr
