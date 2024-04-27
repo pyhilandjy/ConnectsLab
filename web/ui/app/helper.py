@@ -1,4 +1,4 @@
-from request import get_users, get_files, get_image_files, get_image_types
+from request import get_users, get_files, get_image_types, get_image_files_path
 
 
 def get_users_ids():
@@ -16,9 +16,14 @@ def get_files_ids(user_id):
     return [files.get("id") for files in get_files(user_id)]
 
 
-def get_image_id(id):
+def get_image_file_path(user_id, end_date, start_date, type):
     """image_files/id 갖고오기"""
-    return [image_files.get("id") for image_files in get_image_files(id)]
+    return [
+        get_image_files_path.get("image_path")
+        for get_image_files_path in get_image_files_path(
+            user_id, start_date, end_date, type
+        )
+    ]
 
 
 def get_image_type(user_id, start_date, end_date):

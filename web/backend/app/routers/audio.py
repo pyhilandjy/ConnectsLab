@@ -8,7 +8,7 @@ from fastapi import (
     BackgroundTasks,
 )
 
-from app.services import (
+from app.services.stt import (
     save_audio_file,
     gen_audio_file_id,
     gen_audio_file_path,

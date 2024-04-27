@@ -81,7 +81,7 @@ SELECT_STT_RESULTS_WORDCLOUD = text(
 
 SELECT_IMAGE_FILES = text(
     """
-SELECT id
+SELECT image_path
 FROM image_files imf
 WHERE imf.user_id = :user_id 
   AND imf.start_date = :start_date

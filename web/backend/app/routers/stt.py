@@ -1,6 +1,12 @@
-from fastapi import APIRouter, HTTPException, Form, File
+from fastapi import APIRouter, HTTPException
+from fastapi.responses import FileResponse
 from pydantic import BaseModel
 from datetime import date
+from zipfile import ZipFile
+from io import BytesIO
+
+import zipfile
+import os
 
 from app.database.query import (
     SELECT_STT_RESULTS,
@@ -9,7 +15,7 @@ from app.database.query import (
     SELECT_IMAGE_TYPE,
 )
 from app.database.worker import execute_select_query
-from app.services import create_wordcloud, FONT_PATH
+from app.services.gen_wordcloud import create_wordcloud, FONT_PATH
 
 router = APIRouter()
 
@@ -39,7 +45,7 @@ class ImagetypeModel(BaseModel):
 
 @router.post("/stt-results-by-file_id/", tags=["stt_results"])
 async def get_stt_results_by_file_id(stt_model: FileModel):
-    """stt result를 가져오는 엔드포인트"""
+    """file_id별로 stt result를 가져오는 엔드포인트"""
     user_info = execute_select_query(
         query=SELECT_STT_RESULTS, params={"file_id": stt_model.file_id}
     )
@@ -50,9 +56,9 @@ async def get_stt_results_by_file_id(stt_model: FileModel):
     return user_info
 
 
-@router.post("/stt-results-wordcloud/", tags=["stt_results"])
+@router.post("/create-wordcloud/", tags=["stt_results"])
 async def generate_wordcloud(wordcloud_model: WordcloudModel):
-    """워드클라우드를 위한 STT 결과를 가져오는 엔드포인트"""
+    """워드클라우드를 생성하는 엔드포인트(현재 2개의 파일은 보여지는것 구현x)"""
     stt_wordcloud = execute_select_query(
         query=SELECT_STT_RESULTS_WORDCLOUD,
         params={
@@ -78,16 +84,16 @@ async def generate_wordcloud(wordcloud_model: WordcloudModel):
     image_path = create_wordcloud(
         stt_wordcloud, font_path, user_id, start_date, end_date, type
     )
-    return image_path
+    return FileResponse(image_path)
 
 
-@router.post("/stt-results/image_file/", tags=["stt_results"])
-async def get_image_file(imagefilemodel: ImagefileModel):
+@router.post("/image_files/images/", tags=["stt_results"])
+async def get_images(imagefilemodel: ImagefileModel):
     """
-    image_files 데이터를 가져오는 엔드포인트
+    images를 가져오는 엔드포인트
     """
 
-    image_files = execute_select_query(
+    image_files_path = execute_select_query(
         query=SELECT_IMAGE_FILES,
         params={
             "user_id": imagefilemodel.user_id,
@@ -97,13 +103,26 @@ async def get_image_file(imagefilemodel: ImagefileModel):
         },
     )
 
-    if not image_files:
+    if not image_files_path:
         raise HTTPException(status_code=404, detail="files not found")
 
-    return image_files
+    # zip파일로 묶어서 전송
+    zip_path = "../backend/app/image/image.zip"
+    with zipfile.ZipFile(zip_path, "w") as z:
+        for image_dict in image_files_path:
+            img_path = image_dict["image_path"]
+            if os.path.exists(img_path):
+                z.write(img_path, os.path.basename(img_path))
+            else:
+                raise HTTPException(
+                    status_code=404, detail=f"File not found: {img_path}"
+                )
+
+    # Return the zip file as a response
+    return FileResponse(zip_path, media_type="application/zip", filename="images.zip")
 
 
-@router.post("/stt-results/image_type/", tags=["stt_results"])
+@router.post("/image_files/image_type/", tags=["stt_results"])
 async def get_image_type(imagetypemodel: ImagetypeModel):
     """
     image_type을 가져오는 엔드포인트

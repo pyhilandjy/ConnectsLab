@@ -1,7 +1,7 @@
 import streamlit as st
 import requests
 from PIL import Image
-import io
+from io import BytesIO
 
 backend_url = st.secrets["backend_url"]
 
@@ -48,13 +48,11 @@ def get_image_files(user_id, start_date, end_date, type):
         "end_date": end_date,
         "type": type,
     }
-    response = requests.post(
-        url=backend_url + "/stt/stt-results/image_file/", json=data
-    )
+    response = requests.post(url=backend_url + "/stt/image_files/images/", json=data)
     if response.status_code == 200:
-        return response.json()
+        return BytesIO(response.content)
     else:
-        return []
+        return None
 
 
 def get_image_types(user_id, start_date, end_date):
@@ -72,12 +70,12 @@ def get_image_types(user_id, start_date, end_date):
         return []
 
 
-def get_wordcloud(user_id, start_date, end_date):
+def create_wordcloud(user_id, start_date, end_date):
     data = {"user_id": user_id, "start_date": start_date, "end_date": end_date}
-    response = requests.post(url=backend_url + "/stt/stt-results-wordcloud/", json=data)
+    response = requests.post(url=backend_url + "/stt/create-wordcloud/", json=data)
     if response.status_code == 200:
-        image_path = response.json()
-        return image_path
+        image = Image.open(BytesIO(response.content))
+        return image
     else:
         st.error("Failed to generate wordcloud")
         return None
