@@ -20,7 +20,6 @@ from app.services.stt import (
 
 
 router = APIRouter()
-app = FastAPI()
 
 
 # ClovaSpeechClient()

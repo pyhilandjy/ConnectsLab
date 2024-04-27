@@ -2,8 +2,6 @@ from fastapi import APIRouter, HTTPException
 from fastapi.responses import FileResponse
 from pydantic import BaseModel
 from datetime import date
-from zipfile import ZipFile
-from io import BytesIO
 
 import zipfile
 import os
