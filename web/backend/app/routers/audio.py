@@ -16,6 +16,7 @@ from app.services.stt import (
     insert_audio_file_metadata,
     get_stt_results,
     insert_stt_segments,
+    explode,
 )
 
 
@@ -70,5 +71,6 @@ async def create_upload_file(
 
 
 async def process_stt_and_insert(file_path, file_id):
-    segments = get_stt_results(file_path)  # STT 결과를 가져옵니다.
-    return insert_stt_segments(segments, file_id)
+    segments = get_stt_results(file_path)
+    explode_segments = explode(segments, "textEdited")
+    return insert_stt_segments(explode_segments, file_id)

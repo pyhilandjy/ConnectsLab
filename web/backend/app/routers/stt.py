@@ -13,7 +13,7 @@ from app.database.query import (
     SELECT_IMAGE_TYPE,
 )
 from app.database.worker import execute_select_query
-from app.services.gen_wordcloud import create_wordcloud, FONT_PATH, aaa
+from app.services.gen_wordcloud import create_wordcloud, FONT_PATH, violin_chart
 
 router = APIRouter()
 
@@ -152,10 +152,15 @@ async def generate_violin_chart(image_model: ImageModel):
             "end_date": image_model.end_date,
         },
     )
+    user_id = image_model.user_id
+    start_date = image_model.start_date
+    end_date = image_model.end_date
+    type = "violin"
+    font_path = FONT_PATH
 
     if not stt_violin_chart:
         raise HTTPException(
             status_code=404,
             detail="No STT results found for the specified user and date range.",
         )
-    aaa(stt_violin_chart)
+    violin_chart(stt_violin_chart, user_id, start_date, end_date, type, font_path)
