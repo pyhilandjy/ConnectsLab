@@ -62,7 +62,7 @@ def get_image_types(user_id, start_date, end_date):
         "end_date": end_date,
     }
     response = requests.post(
-        url=backend_url + "/stt/stt-results/image_type/", json=data
+        url=backend_url + "/stt/image_files/image_type/", json=data
     )
     if response.status_code == 200:
         return response.json()

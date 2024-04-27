@@ -44,19 +44,19 @@ class ImagetypeModel(BaseModel):
 @router.post("/stt-results-by-file_id/", tags=["stt_results"])
 async def get_stt_results_by_file_id(stt_model: FileModel):
     """file_id별로 stt result를 가져오는 엔드포인트"""
-    user_info = execute_select_query(
+    files_info = execute_select_query(
         query=SELECT_STT_RESULTS, params={"file_id": stt_model.file_id}
     )
 
-    if not user_info:
-        raise HTTPException(status_code=404, detail="Users not found")
+    if not files_info:
+        raise HTTPException(status_code=404, detail="Users not files_info")
 
-    return user_info
+    return files_info
 
 
 @router.post("/create-wordcloud/", tags=["stt_results"])
 async def generate_wordcloud(wordcloud_model: WordcloudModel):
-    """워드클라우드를 생성하는 엔드포인트(현재 2개의 파일은 보여지는것 구현x)"""
+    """워드클라우드를 생성하여 이미지 반환하는 엔드포인트(현재 2개의 파일은 보여지는것 구현x)"""
     stt_wordcloud = execute_select_query(
         query=SELECT_STT_RESULTS_WORDCLOUD,
         params={
@@ -88,7 +88,7 @@ async def generate_wordcloud(wordcloud_model: WordcloudModel):
 @router.post("/image_files/images/", tags=["stt_results"])
 async def get_images(imagefilemodel: ImagefileModel):
     """
-    images를 가져오는 엔드포인트
+    images를 zip파일로 반환하는 엔드포인트
     """
 
     image_files_path = execute_select_query(
@@ -123,7 +123,7 @@ async def get_images(imagefilemodel: ImagefileModel):
 @router.post("/image_files/image_type/", tags=["stt_results"])
 async def get_image_type(imagetypemodel: ImagetypeModel):
     """
-    image_type을 가져오는 엔드포인트
+    user_id, start_date, end_date 별로 image_type을 가져오는 엔드포인트
     """
 
     image_type = execute_select_query(
