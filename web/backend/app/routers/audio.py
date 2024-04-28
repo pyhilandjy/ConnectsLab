@@ -17,6 +17,7 @@ from app.services.stt import (
     get_stt_results,
     insert_stt_segments,
     explode,
+    rename_keys,
 )
 
 
@@ -72,5 +73,6 @@ async def create_upload_file(
 
 async def process_stt_and_insert(file_path, file_id):
     segments = get_stt_results(file_path)
-    explode_segments = explode(segments, "textEdited")
+    rename_segments = rename_keys(segments)
+    explode_segments = explode(rename_segments, "textEdited")
     return insert_stt_segments(explode_segments, file_id)

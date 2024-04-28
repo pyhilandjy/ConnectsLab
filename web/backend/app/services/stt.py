@@ -75,8 +75,8 @@ def insert_stt_segments(segments, file_id):
     data_list = []
     for index, segment in enumerate(segments, start=1):
         segment_data = {"file_id": file_id, "index": index}
-        start_time = segment["start"]
-        end_time = segment["end"]
+        start_time = segment["start_time"]
+        end_time = segment["end_time"]
         text = segment["text"]
         confidence = segment["confidence"]
         speaker_label = segment["speaker"]["label"]
@@ -177,3 +177,40 @@ def explode(segments: list, target_col: str):
 
             return_list.append(col_data)
     return return_list
+
+
+def rename_keys(segments):
+    segment = segments[0]
+    segment_names = {}
+    time = []
+    for key, value in segment.items():
+        if type(value) == int:
+            time.append([key, value])
+        elif type(value) == str:
+            if "edited" in key.lower():
+                segment_names[key] = "textEdited"
+            else:
+                segment_names[key] = "text"
+        elif type(value) == float:
+            segment_names[key] = "confidence"
+        elif type(value) == dict:
+            if "name" in value.keys():
+                segment_names[key] = "speaker"
+            else:
+                segment_names[key] = "diarization"
+        elif type(value) == list:
+            segment_names[key] = "words"
+        else:
+            print("뭔가 잘못됐다")
+
+    if time[0][1] > time[1][1]:
+        segment_names[time[0][0]] = "end_time"
+        segment_names[time[1][0]] = "start_time"
+    else:
+        segment_names[time[0][0]] = "start_time"
+        segment_names[time[1][0]] = "end_time"
+
+    output = []
+    for segment in segments:
+        output.append({segment_names.get(k, k): v for k, v in segment.items()})
+    return output
