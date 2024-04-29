@@ -24,7 +24,7 @@ def page_3():
     col1, col2, col3 = st.columns([1, 1, 1])
 
     with col1:
-        if st.button("워드클라우드 이미지 조회"):
+        if st.button("이미지 조회"):
             wordcloud_image = get_image_files(
                 selected_user_id[0], start_date, end_date, selected_type
             )
