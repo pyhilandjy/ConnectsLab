@@ -79,3 +79,14 @@ def create_wordcloud(user_id, start_date, end_date):
     else:
         st.error("Failed to generate wordcloud")
         return None
+
+
+def create_violinplot(user_id, start_date, end_date):
+    data = {"user_id": user_id, "start_date": start_date, "end_date": end_date}
+    response = requests.post(url=backend_url + "/stt/create-violinplot/", json=data)
+    if response.status_code == 200:
+        image = Image.open(BytesIO(response.content))
+        return image
+    else:
+        st.error("Failed to generate violinplot")
+        return None

@@ -2,7 +2,7 @@ import streamlit as st
 from datetime import date
 from zipfile import ZipFile
 
-from request import create_wordcloud
+from request import create_wordcloud, create_violinplot
 from helper import get_users_ids_name, get_image_type
 from request import get_image_files
 
@@ -21,9 +21,9 @@ def page_3():
     type = get_image_type(selected_user_id[0], start_date, end_date)
     selected_type = st.selectbox("type 선택", type)
 
-    col_1, col_2 = st.columns([1, 1])
+    col1, col2, col3 = st.columns([1, 1, 1])
 
-    with col_1:
+    with col1:
         if st.button("워드클라우드 이미지 조회"):
             wordcloud_image = get_image_files(
                 selected_user_id[0], start_date, end_date, selected_type
@@ -37,9 +37,16 @@ def page_3():
                             st.image(img_bytes, caption=file_name, output_format="PNG")
             else:
                 st.error("Failed to load images.")
-    with col_2:
+    with col2:
         if st.button("워드클라우드 생성"):
             wordcloud_image = create_wordcloud(
+                selected_user_id[0], start_date, end_date
+            )
+            if wordcloud_image:
+                st.image(wordcloud_image)
+    with col3:
+        if st.button("발화량 플롯 생성"):
+            wordcloud_image = create_violinplot(
                 selected_user_id[0], start_date, end_date
             )
             if wordcloud_image:

@@ -214,15 +214,3 @@ def rename_keys(segments):
     for segment in segments:
         output.append({segment_names.get(k, k): v for k, v in segment.items()})
     return output
-
-
-a = {
-    "start": 1970,
-    "end": 12225,
-    "text": "엄마랑 오늘은 그림을 한번 그려보자. 선유 그림 그릴 거야",
-    "confidence": 0.966,
-    "diarization": {"label": "1"},
-    "speaker": {"label": "1", "name": "A", "edited": False},
-    "words": [[...], [...], [...], [...], [...], [...], [...], [...], [...]],
-    "textEdited": "엄마랑 오늘은 그림을 한번 그려보자. 선유 그림 그릴 거야",
-}

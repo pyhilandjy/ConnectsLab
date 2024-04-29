@@ -141,7 +141,7 @@ async def get_image_type(imagetypemodel: ImagetypeModel):
     return image_type
 
 
-@router.post("/create-violin_chart/", tags=["violin_chart"])
+@router.post("/create-violinplot/", tags=["stt_results"])
 async def generate_violin_chart(image_model: ImageModel):
     """워드클라우드를 생성하여 이미지 반환하는 엔드포인트(현재 2개의 파일은 보여지는것 구현x)"""
     stt_violin_chart = execute_select_query(
