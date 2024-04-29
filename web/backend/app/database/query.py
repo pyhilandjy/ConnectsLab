@@ -101,49 +101,9 @@ WHERE user_id = :user_id
 """
 )
 
-SENTENCE_COUNT = text(
-    """
-    SELECT speaker_label, COUNT(*) AS sentence_count
-    FROM stt_results
-    GROUP BY speaker_label;
-    """
-)
-
-TOTAL_SENTEMCES = text(
-    """
-    SELECT COUNT(*) AS total_sentences
-    FROM stt_results;
-    """
-)
-
-CHAR_COUNTS = text(
-    """
-    SELECT speaker_label, SUM(LENGTH(text_edited)) AS total_characters
-    FROM stt_results
-    GROUP BY speaker_label;
-    """
-)
-
-AVERAGE_SENTENCE_LENGTH = text(
-    """
-    SELECT speaker_label, AVG(LENGTH(text_edited)) AS avg_sentence_length
-    FROM stt_results
-    GROUP BY speaker_label;
-    """
-)
-
-MAX_SENTENCE_LENGTH = text(
-    """
-    SELECT speaker_label, MAX(LENGTH(text_edited)) AS max_sentence_length
-    FROM stt_results
-    GROUP BY speaker_label;
-    """
-)
-
-MIN_SENTENCE_LENGTH = text(
-    """
-    SELECT speaker_label, MIN(LENGTH(text_edited)) AS min_sentence_length
-    FROM stt_results
-    GROUP BY speaker_label;
-    """
-)
+UPDATE_STT_RESULT = text = 
+"""
+UPDATE stt_results
+SET text_edited = :new_text, speaker_label = :new_speaker_label
+WHERE file_id = :file_id AND index = :index;
+"""

@@ -11,8 +11,9 @@ from app.database.query import (
     SELECT_STT_RESULTS_FOR_IMAGE,
     SELECT_IMAGE_FILES,
     SELECT_IMAGE_TYPE,
+    UPDATE_STT_RESULT,
 )
-from app.database.worker import execute_select_query
+from app.database.worker import execute_select_query, execute_insert_update_query_single
 from app.services.gen_wordcloud import create_wordcloud, FONT_PATH, violin_chart
 
 router = APIRouter()
@@ -39,6 +40,15 @@ class ImagetypeModel(BaseModel):
     user_id: str
     start_date: date
     end_date: date
+
+
+class UpdateText(BaseModel):
+    file_id: str
+    index: int
+    old_text: str
+    new_text: str
+    old_speaker: str
+    new_speaker: str
 
 
 @router.post("/stt-results-by-file_id/", tags=["stt_results"])
@@ -168,3 +178,28 @@ async def generate_violin_chart(image_model: ImageModel):
     )
 
     return FileResponse(image_path)
+
+
+@router.post("/stt_results/update/", tags=["stt_results"])
+async def update_stt_text(update_text_model: UpdateText):
+    affected_rows = execute_insert_update_query_single(
+        query=UPDATE_STT_RESULT,
+        params={
+            "file_id": update_text_model.file_id,
+            "index": update_text_model.index,
+            "old_text": update_text_model.old_text,
+            "new_text": update_text_model.new_text,
+            "old_speaker": update_text_model.old_speaker,
+            "new_speaker": update_text_model.new_speaker,
+        },
+    )
+
+    if affected_rows == 0:
+        raise HTTPException(
+            status_code=404, detail="STT result not found or no changes made"
+        )
+
+    return {
+        "message": "STT result updated successfully",
+        "affected_rows": affected_rows,
+    }

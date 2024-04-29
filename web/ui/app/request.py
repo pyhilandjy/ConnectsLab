@@ -90,3 +90,17 @@ def create_violinplot(user_id, start_date, end_date):
     else:
         st.error("Failed to generate violinplot")
         return None
+
+
+def text_replace(file_id, index, new_text, new_speaker_label):
+    data = {
+        "file_id": file_id,
+        "index": index,
+        "new_text": new_text,
+        "new_speaker_label": new_speaker_label,
+    }
+    response = requests.put(url=backend_url + "/stt/stt_results/update/", json=data)
+    if response.status_code == 200:
+        st.success("Update successful!")
+    else:
+        st.error("Failed to update. Please check the input and try again.")
