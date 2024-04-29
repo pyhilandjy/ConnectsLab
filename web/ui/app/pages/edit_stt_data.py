@@ -1,6 +1,6 @@
 import streamlit as st
 import pandas as pd
-from request import get_stt_results_by_file_id
+from request import get_stt_results_by_file_id, text_replace, speaker_replace
 from helper import get_files_ids, get_users_ids_name
 
 
@@ -47,17 +47,24 @@ def page_2():
             new_speaker = st.text_input("새로운 발화자 입력")
 
         btn_col1, btn_col2 = st.columns(2)
+
+        file_id = stt_result["file_id"]
+        index = st.number_input("Index", step=1)
+        old_text = st.text_input("Old Text")
+        new_text = st.text_input("New Text")
+        old_speaker = st.text_input("Old Speaker Label")
+        new_speaker = st.text_input("New Speaker Label")
         with btn_col1:
             if st.button("단어 변경"):
                 stt_result["text_edited"] = stt_result["text_edited"].str.replace(
                     old_word, new_word, regex=True
                 )
+
+                text_replace(file_id, index, old_text, new_text)
                 st.success("단어 변경 완료!")
         with btn_col2:
-            if st.button("발화자 변경"):
-                stt_result["speaker_label"] = stt_result["speaker_label"].str.replace(
-                    old_speaker, new_speaker, regex=True
-                )
+            if st.button("Update"):
+                speaker_replace(file_id, index, old_speaker, new_speaker)
                 st.success("발화자 변경 완료!")
 
         st.write("STT 결과 수정:")

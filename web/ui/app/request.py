@@ -92,14 +92,32 @@ def create_violinplot(user_id, start_date, end_date):
         return None
 
 
-def text_replace(file_id, index, new_text, new_speaker_label):
+def text_replace(file_id, index, old_text, new_text):
     data = {
         "file_id": file_id,
         "index": index,
+        "old_text": old_text,
         "new_text": new_text,
-        "new_speaker_label": new_speaker_label,
     }
-    response = requests.put(url=backend_url + "/stt/stt_results/update/", json=data)
+    response = requests.put(
+        url=backend_url + "/stt/stt_results/update_text/", json=data
+    )
+    if response.status_code == 200:
+        st.success("Update successful!")
+    else:
+        st.error("Failed to update. Please check the input and try again.")
+
+
+def speaker_replace(file_id, index, old_speaker, new_speaker):
+    data = {
+        "file_id": file_id,
+        "index": index,
+        "old_speaker": old_speaker,
+        "new_speaker": new_speaker,
+    }
+    response = requests.put(
+        url=backend_url + "/stt/stt_results/update_speaker/", json=data
+    )
     if response.status_code == 200:
         st.success("Update successful!")
     else:

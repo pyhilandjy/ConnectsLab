@@ -101,9 +101,17 @@ WHERE user_id = :user_id
 """
 )
 
-UPDATE_STT_RESULT = text = 
+UPDATE_STT_TEXT = text(
+    """
+    UPDATE stt_results
+    SET text_edited = REPLACE(text_edited, :old_text, :new_text)
+    WHERE file_id = :file_id AND index = :index;
 """
-UPDATE stt_results
-SET text_edited = :new_text, speaker_label = :new_speaker_label
-WHERE file_id = :file_id AND index = :index;
+)
+UPDATE_STT_SPEAKER = text(
+    """
+    UPDATE stt_results
+    SET speaker_label = REPLACE(speaker_label, :old_speaker, :new_speaker)
+    WHERE file_id = :file_id AND index = :index;
 """
+)

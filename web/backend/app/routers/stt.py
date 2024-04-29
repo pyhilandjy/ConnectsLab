@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException
 from fastapi.responses import FileResponse
 from pydantic import BaseModel
-from datetime import date, timedelta
+from datetime import date
 
 import zipfile
 import os
@@ -11,7 +11,8 @@ from app.database.query import (
     SELECT_STT_RESULTS_FOR_IMAGE,
     SELECT_IMAGE_FILES,
     SELECT_IMAGE_TYPE,
-    UPDATE_STT_RESULT,
+    UPDATE_STT_TEXT,
+    UPDATE_STT_SPEAKER,
 )
 from app.database.worker import execute_select_query, execute_insert_update_query_single
 from app.services.gen_wordcloud import create_wordcloud, FONT_PATH, violin_chart
@@ -47,6 +48,11 @@ class UpdateText(BaseModel):
     index: int
     old_text: str
     new_text: str
+
+
+class UpdateSpeaker(BaseModel):
+    file_id: str
+    index: int
     old_speaker: str
     new_speaker: str
 
@@ -180,17 +186,38 @@ async def generate_violin_chart(image_model: ImageModel):
     return FileResponse(image_path)
 
 
-@router.post("/stt_results/update/", tags=["stt_results"])
+@router.post("/stt_results/update_text/", tags=["stt_results"])
 async def update_stt_text(update_text_model: UpdateText):
     affected_rows = execute_insert_update_query_single(
-        query=UPDATE_STT_RESULT,
+        query=UPDATE_STT_TEXT,
         params={
             "file_id": update_text_model.file_id,
             "index": update_text_model.index,
             "old_text": update_text_model.old_text,
             "new_text": update_text_model.new_text,
-            "old_speaker": update_text_model.old_speaker,
-            "new_speaker": update_text_model.new_speaker,
+        },
+    )
+
+    if affected_rows == 0:
+        raise HTTPException(
+            status_code=404, detail="STT result not found or no changes made"
+        )
+
+    return {
+        "message": "STT result updated successfully",
+        "affected_rows": affected_rows,
+    }
+
+
+@router.post("/stt_results/update_speaker/", tags=["stt_results"])
+async def update_stt_text(update_speaker_model: UpdateSpeaker):
+    affected_rows = execute_insert_update_query_single(
+        query=UPDATE_STT_SPEAKER,
+        params={
+            "file_id": update_speaker_model.file_id,
+            "index": update_speaker_model.index,
+            "old_speaker": update_speaker_model.old_speaker,
+            "new_speaker": update_speaker_model.new_speaker,
         },
     )
 
