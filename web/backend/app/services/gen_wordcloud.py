@@ -282,6 +282,7 @@ def violin_chart(stt_violin_chart, user_id, start_date, end_date, type, font_pat
     insert_image_file_metadata(metadata)
     sns.set_palette(sns.color_palette("Set2", 2))
     save_violin_plot(stt_violin_chart, image_path, font_prop)
+    return image_path
 
 
 def save_violin_plot(stt_violin_chart, image_path, font_prop):

@@ -163,4 +163,8 @@ async def generate_violin_chart(image_model: ImageModel):
             status_code=404,
             detail="No STT results found for the specified user and date range.",
         )
-    violin_chart(stt_violin_chart, user_id, start_date, end_date, type, font_path)
+    image_path = violin_chart(
+        stt_violin_chart, user_id, start_date, end_date, type, font_path
+    )
+
+    return FileResponse(image_path)
