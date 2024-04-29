@@ -37,31 +37,32 @@ def page_2():
 
     if not stt_result.empty:
         # 단어 변경 입력 받기
-        col1, col2 = st.columns(2)
-        with col1:
-            old_word = st.text_input("변경할 단어 입력")
-            old_speaker = st.text_input("변경할 발화자 입력")
+        # col1, col2 = st.columns(2)
+        # with col1:
+        #     old_word = st.text_input("변경할 단어 입력")
+        #     old_speaker = st.text_input("변경할 발화자 입력")
 
-        with col2:
-            new_word = st.text_input("새로운 단어 입력")
-            new_speaker = st.text_input("새로운 발화자 입력")
+        # with col2:
+        #     new_word = st.text_input("새로운 단어 입력")
+        #     new_speaker = st.text_input("새로운 발화자 입력")
 
         btn_col1, btn_col2 = st.columns(2)
 
-        file_id = stt_result["file_id"]
+        file_id = selected_file_id
         index = st.number_input("Index", step=1)
-        old_text = st.text_input("Old Text")
-        new_text = st.text_input("New Text")
+        # old_text = st.text_input("Old Text")
+        # new_text = st.text_input("New Text")
         old_speaker = st.text_input("Old Speaker Label")
         new_speaker = st.text_input("New Speaker Label")
         with btn_col1:
             if st.button("단어 변경"):
-                stt_result["text_edited"] = stt_result["text_edited"].str.replace(
-                    old_word, new_word, regex=True
-                )
+                "hello"
+                # stt_result["text_edited"] = stt_result["text_edited"].str.replace(
+                #     old_word, new_word, regex=True
+                # )
 
-                text_replace(file_id, index, old_text, new_text)
-                st.success("단어 변경 완료!")
+                # text_replace(file_id, index, old_text, new_text)
+                # st.success("단어 변경 완료!")
         with btn_col2:
             if st.button("Update"):
                 speaker_replace(file_id, index, old_speaker, new_speaker)

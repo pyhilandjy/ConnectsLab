@@ -115,7 +115,7 @@ def speaker_replace(file_id, index, old_speaker, new_speaker):
         "old_speaker": old_speaker,
         "new_speaker": new_speaker,
     }
-    response = requests.put(
+    response = requests.post(
         url=backend_url + "/stt/stt_results/update_speaker/", json=data
     )
     if response.status_code == 200:
