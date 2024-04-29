@@ -46,10 +46,20 @@ def page_2():
             st.success("단어 변경 완료!")
 
         st.write("STT 결과 수정:")
-        for i in stt_result.index:
-            stt_result.at[i, "text_edited"] = st.text_input(
-                f"Row {i+1}", stt_result.at[i, "text_edited"]
-            )
+    for i in stt_result.index:
+        current_text = stt_result.at[i, "text_edited"]
+        current_speaker = stt_result.at[i, "speaker_label"]
+
+        col1, col2 = st.columns([3, 0.5])
+
+        with col1:
+            edited_text = st.text_input(f"Row {i+1} Text", current_text)
+
+        with col2:
+            speaker_label = st.text_input(f"Row {i+1} Speaker", current_speaker)
+
+        stt_result.at[i, "text_edited"] = edited_text
+        stt_result.at[i, "speaker_label"] = speaker_label
 
 
 if __name__ == "__main__":
