@@ -37,22 +37,28 @@ def page_2():
 
     if not stt_result.empty:
         # 단어 변경 입력 받기
-        old_word = st.text_input("변경할 단어 입력")
-        new_word = st.text_input("새로운 단어 입력")
-        old_speaker = st.text_input("변경할 발화자 입력")  # 추가된 입력 필드
-        new_speaker = st.text_input("새로운 발화자 입력")  # 추가된 입력 필드
+        col1, col2 = st.columns(2)
+        with col1:
+            old_word = st.text_input("변경할 단어 입력")
+            old_speaker = st.text_input("변경할 발화자 입력")
 
-        # 단어 및 발화자 변경 버튼
-        if st.button("Replace Words and Speakers"):
-            # 단어 변경 실행
-            stt_result["text_edited"] = stt_result["text_edited"].str.replace(
-                old_word, new_word, regex=True
-            )
-            # 발화자 변경 실행
-            stt_result["speaker_label"] = stt_result["speaker_label"].str.replace(
-                old_speaker, new_speaker, regex=True
-            )
-            st.success("단어 및 발화자 변경 완료!")
+        with col2:
+            new_word = st.text_input("새로운 단어 입력")
+            new_speaker = st.text_input("새로운 발화자 입력")
+
+        btn_col1, btn_col2 = st.columns(2)
+        with btn_col1:
+            if st.button("단어 변경"):
+                stt_result["text_edited"] = stt_result["text_edited"].str.replace(
+                    old_word, new_word, regex=True
+                )
+                st.success("단어 변경 완료!")
+        with btn_col2:
+            if st.button("발화자 변경"):
+                stt_result["speaker_label"] = stt_result["speaker_label"].str.replace(
+                    old_speaker, new_speaker, regex=True
+                )
+                st.success("발화자 변경 완료!")
 
         st.write("STT 결과 수정:")
     for i in stt_result.index:
