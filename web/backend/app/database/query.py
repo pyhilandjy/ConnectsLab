@@ -74,8 +74,9 @@ SELECT_STT_RESULTS_FOR_IMAGE = text(
     FROM stt_results sr
     JOIN files f ON sr.file_id = f.id
     WHERE f.user_id = :user_id
-        AND sr.created_at BETWEEN :start_date AND :end_date
+        AND sr.created_at BETWEEN :start_date AND :end_date + INTERVAL '1 day'
     ORDER BY sr.created_at ASC, sr.index ASC
+
     """
 )
 
