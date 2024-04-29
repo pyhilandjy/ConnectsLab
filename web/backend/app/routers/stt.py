@@ -45,14 +45,12 @@ class ImagetypeModel(BaseModel):
 
 class UpdateText(BaseModel):
     file_id: str
-    index: int
     old_text: str
     new_text: str
 
 
 class UpdateSpeaker(BaseModel):
     file_id: str
-    index: int
     old_speaker: str
     new_speaker: str
 
@@ -192,7 +190,6 @@ async def update_stt_text(update_text_model: UpdateText):
         query=UPDATE_STT_TEXT,
         params={
             "file_id": update_text_model.file_id,
-            "index": update_text_model.index,
             "old_text": update_text_model.old_text,
             "new_text": update_text_model.new_text,
         },
@@ -215,7 +212,6 @@ async def update_stt_text(update_speaker_model: UpdateSpeaker):
         query=UPDATE_STT_SPEAKER,
         params={
             "file_id": update_speaker_model.file_id,
-            "index": update_speaker_model.index,
             "old_speaker": update_speaker_model.old_speaker,
             "new_speaker": update_speaker_model.new_speaker,
         },

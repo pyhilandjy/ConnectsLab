@@ -105,13 +105,13 @@ UPDATE_STT_TEXT = text(
     """
     UPDATE stt_results
     SET text_edited = REPLACE(text_edited, :old_text, :new_text)
-    WHERE file_id = :file_id AND index = :index;
+    WHERE file_id = :file_id
 """
 )
 UPDATE_STT_SPEAKER = text(
     """
     UPDATE stt_results
     SET speaker_label = REPLACE(speaker_label, :old_speaker, :new_speaker)
-    WHERE file_id = :file_id AND index = :index;
+    WHERE file_id = :file_id
 """
 )
