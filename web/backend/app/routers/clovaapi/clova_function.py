@@ -1,12 +1,11 @@
 import requests  # naver CLOVA Speech API
 import json  # naver CLOVA Speech API
+from app.config import settings
 
 
 class ClovaApiClient:
-    # Clova Speech invoke URL
-    invoke_url = "https://clovaspeech-gw.ncloud.com/external/v1/6542/2a76879d93ca2fd6fc6fcf7cdc1cdf1888f7487dbff7c21c5a0ab0d655659361"
-    # Clova Speech secret key
-    secret = "e528cad5fdc14d84808b304e6eb77b35"
+    invoke_url = settings.clova_invoke_url
+    secret = settings.clova_secret
 
     def request_stt(
         self,
