@@ -167,4 +167,4 @@ cython_debug/
 audio
 *.m4a
 /khaiii
-/web/db/data/postgresql
+/web/db/data
