@@ -43,9 +43,9 @@ def page_2():
         with replace_col2:
             new_text = st.text_input("New Text")
         with replace_col3:
-            new_speaker = st.text_input("New Speaker Label")
-        with replace_col4:
             old_speaker = st.text_input("Old Speaker Label")
+        with replace_col4:
+            new_speaker = st.text_input("New Speaker Label")
         btn_col1, btn_col2 = st.columns(2)
         with btn_col1:
             if st.button("단어 변경"):
@@ -56,20 +56,20 @@ def page_2():
                 speaker_replace(file_id, old_speaker, new_speaker)
                 st.success("발화자 변경 완료!")
 
-        for i in stt_result.index:
-            current_text = stt_result.at[i, "text_edited"]
-            current_speaker = stt_result.at[i, "speaker_label"]
+    for i in stt_result.index:
+        current_text = stt_result.at[i, "text_edited"]
+        current_speaker = stt_result.at[i, "speaker_label"]
 
-            col1, col2 = st.columns([3, 0.5])
+        col1, col2 = st.columns([3, 0.5])
 
-            with col1:
-                edited_text = st.text_input(f"Row {i+1} Text", current_text)
+        with col1:
+            edited_text = st.text_input(f"Row {i+1} Text", current_text)
 
-            with col2:
-                speaker_label = st.text_input(f"Row {i+1} Speaker", current_speaker)
+        with col2:
+            speaker_label = st.text_input(f"Row {i+1} Speaker", current_speaker)
 
-            stt_result.at[i, "text_edited"] = edited_text
-            stt_result.at[i, "speaker_label"] = speaker_label
+        stt_result.at[i, "text_edited"] = edited_text
+        stt_result.at[i, "speaker_label"] = speaker_label
 
 
 if __name__ == "__main__":
