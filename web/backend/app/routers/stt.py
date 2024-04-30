@@ -13,6 +13,10 @@ from app.database.query import (
     SELECT_IMAGE_TYPE,
     UPDATE_STT_TEXT,
     UPDATE_STT_SPEAKER,
+    UPDATE_STT_EDIT_TEXT,
+    INCREASE_INDEX,
+    ADD_SELECTED_INDEX_DATA,
+    CALLBACK_INDEX,
 )
 from app.database.worker import execute_select_query, execute_insert_update_query_single
 from app.services.gen_wordcloud import create_wordcloud, FONT_PATH, violin_chart
@@ -22,37 +26,6 @@ router = APIRouter()
 
 class FileModel(BaseModel):
     file_id: str
-
-
-class ImageModel(BaseModel):
-    user_id: str
-    start_date: date
-    end_date: date
-
-
-class ImagefileModel(BaseModel):
-    user_id: str
-    start_date: date
-    end_date: date
-    type: str
-
-
-class ImagetypeModel(BaseModel):
-    user_id: str
-    start_date: date
-    end_date: date
-
-
-class UpdateText(BaseModel):
-    file_id: str
-    old_text: str
-    new_text: str
-
-
-class UpdateSpeaker(BaseModel):
-    file_id: str
-    old_speaker: str
-    new_speaker: str
 
 
 @router.post("/stt-results-by-file_id/", tags=["stt_results"])
@@ -66,6 +39,12 @@ async def get_stt_results_by_file_id(stt_model: FileModel):
         raise HTTPException(status_code=404, detail="Users not files_info")
 
     return files_info
+
+
+class ImageModel(BaseModel):
+    user_id: str
+    start_date: date
+    end_date: date
 
 
 @router.post("/create-wordcloud/", tags=["stt_results"])
@@ -97,6 +76,13 @@ async def generate_wordcloud(image_model: ImageModel):
         stt_wordcloud, font_path, user_id, start_date, end_date, type
     )
     return FileResponse(image_path)
+
+
+class ImagefileModel(BaseModel):
+    user_id: str
+    start_date: date
+    end_date: date
+    type: str
 
 
 @router.post("/image_files/images/", tags=["stt_results"])
@@ -132,6 +118,12 @@ async def get_images(imagefilemodel: ImagefileModel):
 
     # Return the zip file as a response
     return FileResponse(zip_path, media_type="application/zip", filename="images.zip")
+
+
+class ImagetypeModel(BaseModel):
+    user_id: str
+    start_date: date
+    end_date: date
 
 
 @router.post("/image_files/image_type/", tags=["stt_results"])
@@ -184,9 +176,15 @@ async def generate_violin_chart(image_model: ImageModel):
     return FileResponse(image_path)
 
 
+class UpdateText(BaseModel):
+    file_id: str
+    old_text: str
+    new_text: str
+
+
 @router.post("/stt_results/update_text/", tags=["stt_results"])
 async def update_stt_text(update_text_model: UpdateText):
-    affected_rows = execute_insert_update_query_single(
+    update_text = execute_insert_update_query_single(
         query=UPDATE_STT_TEXT,
         params={
             "file_id": update_text_model.file_id,
@@ -195,20 +193,25 @@ async def update_stt_text(update_text_model: UpdateText):
         },
     )
 
-    if affected_rows == 0:
+    if update_text == 0:
         raise HTTPException(
             status_code=404, detail="STT result not found or no changes made"
         )
 
     return {
         "message": "STT result updated successfully",
-        "affected_rows": affected_rows,
     }
+
+
+class UpdateSpeaker(BaseModel):
+    file_id: str
+    old_speaker: str
+    new_speaker: str
 
 
 @router.post("/stt_results/update_speaker/", tags=["stt_results"])
 async def update_stt_text(update_speaker_model: UpdateSpeaker):
-    affected_rows = execute_insert_update_query_single(
+    update_speaker = execute_insert_update_query_single(
         query=UPDATE_STT_SPEAKER,
         params={
             "file_id": update_speaker_model.file_id,
@@ -217,12 +220,98 @@ async def update_stt_text(update_speaker_model: UpdateSpeaker):
         },
     )
 
-    if affected_rows == 0:
+    if update_speaker == 0:
         raise HTTPException(
             status_code=404, detail="STT result not found or no changes made"
         )
 
     return {
         "message": "STT result updated successfully",
-        "affected_rows": affected_rows,
+    }
+
+
+class UpdateTextEdit(BaseModel):
+    file_id: str
+    index: int
+    new_text: str
+
+
+@router.post("/stt_results/update_text_edit/", tags=["stt_results"])
+async def update_stt_text(update_text_edit: UpdateTextEdit):
+    text_edit = execute_insert_update_query_single(
+        query=UPDATE_STT_EDIT_TEXT,
+        params={
+            "file_id": update_text_edit.file_id,
+            "index": update_text_edit.index,
+            "new_text": update_text_edit.new_text,
+        },
+    )
+
+    if text_edit == 0:
+        raise HTTPException(
+            status_code=404, detail="STT result not found or no changes made"
+        )
+
+    return {
+        "message": "STT result updated successfully",
+    }
+
+
+class IncreaseIndex(BaseModel):
+    file_id: str
+    selected_index: int
+
+
+@router.post("/stt_results/selected_index_increase/", tags=["stt_results"])
+async def update_stt_text(increase_index: IncreaseIndex):
+    index_increase = execute_insert_update_query_single(
+        query=INCREASE_INDEX,
+        params={
+            "file_id": increase_index.file_id,
+            "selected_index": increase_index.selected_index,
+        },
+    )
+
+    callback_index = execute_insert_update_query_single(
+        query=CALLBACK_INDEX,
+        params={
+            "file_id": increase_index.file_id,
+            "selected_index": increase_index.selected_index,
+        },
+    )
+
+    if callback_index == 0 or index_increase == 0:
+        raise HTTPException(
+            status_code=404, detail="STT result not found or no add row"
+        )
+
+    return {
+        "message": "add row updated successfully",
+    }
+
+
+class AddIndexData(BaseModel):
+    file_id: str
+    selected_index: int
+    new_index: int
+
+
+@router.post("/stt_results/add_index_data/", tags=["stt_results"])
+async def update_stt_text(add_index_data: AddIndexData):
+    affected_rows = execute_insert_update_query_single(
+        query=ADD_SELECTED_INDEX_DATA,
+        params={
+            "file_id": add_index_data.file_id,
+            "selected_index": add_index_data.selected_index,
+            "new_index": add_index_data.new_index,
+        },
+    )
+
+    if affected_rows == 0:
+        raise HTTPException(
+            status_code=404, detail="STT result not found or no add row"
+        )
+
+    return {
+        "message": "add row updated successfully",
     }

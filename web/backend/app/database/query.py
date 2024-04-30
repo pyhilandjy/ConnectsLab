@@ -115,3 +115,58 @@ UPDATE_STT_SPEAKER = text(
     WHERE file_id = :file_id
 """
 )
+
+UPDATE_STT_EDIT_TEXT = text(
+    """
+    UPDATE stt_results
+    SET text_edited = :new_text
+    WHERE file_id = :file_id AND index = :index;
+"""
+)
+
+INCREASE_INDEX = text(
+    """
+UPDATE stt_results
+SET index = index + 1000
+WHERE file_id = :file_id AND index > :selected_index
+"""
+)
+
+CALLBACK_INDEX = text(
+    """UPDATE stt_results
+SET index = index - 999
+WHERE file_id = :file_id AND index >= :selected_index + 1000;
+"""
+)
+
+
+ADD_SELECTED_INDEX_DATA = text(
+    """
+INSERT INTO stt_results (
+    file_id, 
+    index, 
+    start_time, 
+    end_time, 
+    text, 
+    confidence, 
+    speaker_label, 
+    text_edited, 
+    created_at
+)
+SELECT
+    file_id, 
+    :new_index as index,
+    start_time, 
+    end_time, 
+    text, 
+    confidence, 
+    speaker_label, 
+    text_edited, 
+    created_at
+FROM
+    stt_results
+WHERE
+    file_id = :file_id AND
+    index = :selected_index;
+"""
+)

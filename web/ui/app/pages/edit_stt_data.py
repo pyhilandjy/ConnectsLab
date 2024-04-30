@@ -1,6 +1,13 @@
 import streamlit as st
 import pandas as pd
-from request import get_stt_results_by_file_id, text_replace, speaker_replace
+from request import (
+    get_stt_results_by_file_id,
+    text_replace,
+    speaker_replace,
+    edit_stt_result_text,
+    index_increase,
+    add_row_data,
+)
 from helper import get_files_ids, get_users_ids_name
 
 
@@ -50,26 +57,46 @@ def page_2():
         with btn_col1:
             if st.button("단어 변경"):
                 text_replace(file_id, old_text, new_text)
-                st.success("단어 변경 완료!")
+                st.experimental_rerun()
         with btn_col2:
             if st.button("발화자 변경"):
                 speaker_replace(file_id, old_speaker, new_speaker)
-                st.success("발화자 변경 완료!")
+                st.experimental_rerun()
 
-    for i in stt_result.index:
-        current_text = stt_result.at[i, "text_edited"]
-        current_speaker = stt_result.at[i, "speaker_label"]
+    for i in stt_result["index"]:
+        current_text = stt_result.at[i - 1, "text_edited"]
+        current_speaker = stt_result.at[i - 1, "speaker_label"]
 
         col1, col2 = st.columns([3, 0.5])
 
         with col1:
-            edited_text = st.text_input(f"Row {i+1} Text", current_text)
+            edited_text = st.text_input(f"Row {i}", current_text)
 
         with col2:
-            speaker_label = st.text_input(f"Row {i+1} Speaker", current_speaker)
+            st.text_input(f"Row {i}", current_speaker)
 
-        stt_result.at[i, "text_edited"] = edited_text
-        stt_result.at[i, "speaker_label"] = speaker_label
+        sa_col = st.columns([0.2, 0.2, 0.8, 0.8])  # 버튼을 위한 새로운 컬럼 설정
+        with sa_col[0]:
+            save_button = st.button("Save", key=f"save_{i}")
+            if save_button:
+                index = i
+                response = edit_stt_result_text(file_id, index, edited_text)
+                if response == 200:
+                    st.experimental_rerun()
+                else:
+                    st.error(f"Failed to update Row {i}. Please try again.")
+
+        with sa_col[1]:
+            add_row = st.button("Add", key=f"add_{i}")
+            if add_row:
+                selected_index = i
+                new_index = i + 1
+                index_increase(file_id, selected_index)
+                response = add_row_data(file_id, selected_index, new_index)
+                if response == 200:
+                    st.experimental_rerun()
+                else:
+                    st.error(f"Failed to update Row {i}. Please try again.")
 
 
 if __name__ == "__main__":

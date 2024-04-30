@@ -19,18 +19,18 @@ CREATE TABLE files
 );
 
 
-CREATE TABLE stt_results
+CREATE TABLE stt_results 
 (
-    file_id varchar(255) NOT NULL,
-    index int NOT NULL,
-    start_time int NOT NULL,
-    end_time int NOT NULL,
-    text varchar(255) NOT NULL,
-    confidence float NOT NULL,
-    speaker_label int NOT NULL,
-    text_edited varchar(255) NOT NULL,
-    created_at timestamp NOT NULL DEFAULT current_timestamp,
-    PRIMARY KEY (file_id, index)
+    file_id VARCHAR(255) NOT NULL,
+    index INT,
+    start_time INT,
+    end_time INT,
+    text VARCHAR(255),
+    confidence FLOAT,
+    speaker_label VARCHAR(255),
+    text_edited VARCHAR(255),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    order_index SERIAL PRIMARY KEY
 );
 
 CREATE TABLE roles
