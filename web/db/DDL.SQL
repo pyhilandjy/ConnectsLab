@@ -30,7 +30,7 @@ CREATE TABLE stt_results
     speaker_label VARCHAR(255),
     text_edited VARCHAR(255),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    order_index SERIAL PRIMARY KEY
+   	serial SERIAL PRIMARY KEY
 );
 
 CREATE TABLE roles

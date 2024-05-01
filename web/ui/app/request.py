@@ -146,26 +146,9 @@ def edit_stt_result_text(file_id, index, new_text):
         st.error("Failed to update.")
 
 
-def index_increase(file_id, selected_index):
-    """
-    text를 ui에서 수정하여 db update 요청
-    """
-    data = {
-        "file_id": file_id,
-        "selected_index": selected_index,
-    }
-    response = requests.post(
-        url=backend_url + "/stt/stt_results/selected_index_increase/", json=data
-    )
-    if response.status_code == 200:
-        return response.status_code
-    else:
-        st.error("Failed to update.")
-
-
 def add_row_data(file_id, selected_index, new_index):
     """
-    text를 ui에서 수정하여 db update 요청
+    선택된 row의 복사본 밑으로 추가
     """
     data = {
         "file_id": file_id,
@@ -173,7 +156,24 @@ def add_row_data(file_id, selected_index, new_index):
         "new_index": new_index,
     }
     response = requests.post(
-        url=backend_url + "/stt/stt_results/add_index_data/", json=data
+        url=backend_url + "/stt/stt_results/index_add_data/", json=data
+    )
+    if response.status_code == 200:
+        return response.status_code
+    else:
+        st.error("Failed to update.")
+
+
+def delete_row_data(file_id, selected_index):
+    """
+    선택된 row 삭제
+    """
+    data = {
+        "file_id": file_id,
+        "selected_index": selected_index,
+    }
+    response = requests.post(
+        url=backend_url + "/stt/stt_results/index_delete_data/", json=data
     )
     if response.status_code == 200:
         return response.status_code

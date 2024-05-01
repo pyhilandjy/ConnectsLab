@@ -127,15 +127,8 @@ UPDATE_STT_EDIT_TEXT = text(
 INCREASE_INDEX = text(
     """
 UPDATE stt_results
-SET index = index + 1000
+SET index = index + 1
 WHERE file_id = :file_id AND index > :selected_index
-"""
-)
-
-CALLBACK_INDEX = text(
-    """UPDATE stt_results
-SET index = index - 999
-WHERE file_id = :file_id AND index >= :selected_index + 1000;
 """
 )
 
@@ -169,4 +162,21 @@ WHERE
     file_id = :file_id AND
     index = :selected_index;
 """
+)
+
+
+DELETE_INDEX_DATA = text(
+    """
+    DELETE FROM stt_results
+    WHERE file_id = :file_id AND index = :selected_index;
+    """
+)
+
+
+DECREASE_INDEX = text(
+    """
+    UPDATE stt_results
+    SET index = index - 1
+    WHERE file_id = :file_id AND index > :selected_index;
+    """
 )

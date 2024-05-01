@@ -16,7 +16,8 @@ from app.database.query import (
     UPDATE_STT_EDIT_TEXT,
     INCREASE_INDEX,
     ADD_SELECTED_INDEX_DATA,
-    CALLBACK_INDEX,
+    DELETE_INDEX_DATA,
+    DECREASE_INDEX,
 )
 from app.database.worker import execute_select_query, execute_insert_update_query_single
 from app.services.gen_wordcloud import create_wordcloud, FONT_PATH, violin_chart
@@ -257,30 +258,31 @@ async def update_stt_text(update_text_edit: UpdateTextEdit):
     }
 
 
-class IncreaseIndex(BaseModel):
+class AddIndexData(BaseModel):
     file_id: str
     selected_index: int
+    new_index: int
 
 
-@router.post("/stt_results/selected_index_increase/", tags=["stt_results"])
-async def update_stt_text(increase_index: IncreaseIndex):
+@router.post("/stt_results/index_add_data/", tags=["stt_results"])
+async def update_stt_text(add_index_data: AddIndexData):
     index_increase = execute_insert_update_query_single(
         query=INCREASE_INDEX,
         params={
-            "file_id": increase_index.file_id,
-            "selected_index": increase_index.selected_index,
+            "file_id": add_index_data.file_id,
+            "selected_index": add_index_data.selected_index,
         },
     )
-
-    callback_index = execute_insert_update_query_single(
-        query=CALLBACK_INDEX,
+    copy_data = execute_insert_update_query_single(
+        query=ADD_SELECTED_INDEX_DATA,
         params={
-            "file_id": increase_index.file_id,
-            "selected_index": increase_index.selected_index,
+            "file_id": add_index_data.file_id,
+            "selected_index": add_index_data.selected_index,
+            "new_index": add_index_data.new_index,
         },
     )
 
-    if callback_index == 0 or index_increase == 0:
+    if index_increase or copy_data == 0:
         raise HTTPException(
             status_code=404, detail="STT result not found or no add row"
         )
@@ -290,24 +292,29 @@ async def update_stt_text(increase_index: IncreaseIndex):
     }
 
 
-class AddIndexData(BaseModel):
+class DelIndexData(BaseModel):
     file_id: str
     selected_index: int
-    new_index: int
 
 
-@router.post("/stt_results/add_index_data/", tags=["stt_results"])
-async def update_stt_text(add_index_data: AddIndexData):
-    affected_rows = execute_insert_update_query_single(
-        query=ADD_SELECTED_INDEX_DATA,
+@router.post("/stt_results/index_delete_data/", tags=["stt_results"])
+async def update_stt_text(del_index_data: DelIndexData):
+    delete_data = execute_insert_update_query_single(
+        query=DELETE_INDEX_DATA,
         params={
-            "file_id": add_index_data.file_id,
-            "selected_index": add_index_data.selected_index,
-            "new_index": add_index_data.new_index,
+            "file_id": del_index_data.file_id,
+            "selected_index": del_index_data.selected_index,
+        },
+    )
+    decrement_index = execute_insert_update_query_single(
+        query=DECREASE_INDEX,
+        params={
+            "file_id": del_index_data.file_id,
+            "selected_index": del_index_data.selected_index,
         },
     )
 
-    if affected_rows == 0:
+    if delete_data or decrement_index == 0:
         raise HTTPException(
             status_code=404, detail="STT result not found or no add row"
         )

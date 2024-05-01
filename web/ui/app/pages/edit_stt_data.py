@@ -5,8 +5,8 @@ from request import (
     text_replace,
     speaker_replace,
     edit_stt_result_text,
-    index_increase,
     add_row_data,
+    delete_row_data,
 )
 from helper import get_files_ids, get_users_ids_name
 
@@ -75,7 +75,7 @@ def page_2():
         with col2:
             st.text_input(f"Row {i}", current_speaker)
 
-        sa_col = st.columns([0.2, 0.2, 0.8, 0.8])  # 버튼을 위한 새로운 컬럼 설정
+        sa_col = st.columns([0.2, 0.2, 0.3, 1.2])  # 버튼을 위한 새로운 컬럼 설정
         with sa_col[0]:
             save_button = st.button("Save", key=f"save_{i}")
             if save_button:
@@ -91,8 +91,16 @@ def page_2():
             if add_row:
                 selected_index = i
                 new_index = i + 1
-                index_increase(file_id, selected_index)
                 response = add_row_data(file_id, selected_index, new_index)
+                if response == 200:
+                    st.experimental_rerun()
+                else:
+                    st.error(f"Failed to update Row {i}. Please try again.")
+        with sa_col[2]:
+            add_row = st.button("Delete", key=f"Delete_{i}")
+            if add_row:
+                selected_index = i
+                response = delete_row_data(file_id, selected_index)
                 if response == 200:
                     st.experimental_rerun()
                 else:
