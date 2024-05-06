@@ -18,6 +18,10 @@ from app.database.query import (
     ADD_SELECTED_INDEX_DATA,
     DELETE_INDEX_DATA,
     DECREASE_INDEX,
+    EDIT_STATUS,
+    SELECT_ACT_ID_STT,
+    SELECT_ACT_NAME,
+    UPDATE_ACT_ID,
 )
 from app.database.worker import execute_select_query, execute_insert_update_query_single
 from app.services.gen_wordcloud import create_wordcloud, FONT_PATH, violin_chart
@@ -283,6 +287,13 @@ async def update_stt_text(add_index_data: AddIndexData):
     )
 
     if index_increase or copy_data == 0:
+        execute_insert_update_query_single(
+            query=DECREASE_INDEX,
+            params={
+                "file_id": add_index_data.file_id,
+                "selected_index": add_index_data.selected_index,
+            },
+        )
         raise HTTPException(
             status_code=404, detail="STT result not found or no add row"
         )
@@ -321,4 +332,77 @@ async def update_stt_text(del_index_data: DelIndexData):
 
     return {
         "message": "add row updated successfully",
+    }
+
+
+class EditStatus(BaseModel):
+    file_id: str
+
+
+@router.post("/stt_results/eidt_status/", tags=["stt_results"])
+async def eidt_status(edit_status: EditStatus):
+    edit_progress = execute_insert_update_query_single(
+        query=EDIT_STATUS, params={"file_id": edit_status.file_id}
+    )
+    if edit_progress == 0:
+        raise HTTPException(
+            status_code=404, detail="STT result not found or no add row"
+        )
+
+    return {
+        "message": "add row updated successfully",
+    }
+
+
+class SpeechAct(BaseModel):
+    act_id: int
+
+
+@router.post("/stt_results/speech_act/", tags=["speech_act"])
+async def get_speech_act(speech_act: SpeechAct):
+    """유저의 목록을 가져오는 엔드포인트"""
+    speech_info = execute_select_query(
+        query=SELECT_ACT_ID_STT, params={"act_id": speech_act.act_id}
+    )
+
+    if not speech_info:
+        raise HTTPException(status_code=404, detail="Users not found")
+
+    return speech_info
+
+
+@router.get("/get/speech_act/", tags=["speech_act"])
+async def get_act_name():
+    """유저의 목록을 가져오는 엔드포인트"""
+    act_name = execute_select_query(
+        query=SELECT_ACT_NAME,
+    )
+
+    if not act_name:
+        raise HTTPException(status_code=404, detail="speech_act not found")
+
+    return act_name
+
+
+class ActIdUpdate(BaseModel):
+    unique_id: int
+    selected_act_name: str
+
+
+@router.post("/update/act_id", tags=["speech_act"])
+async def eidt_status(act_id_update: ActIdUpdate):
+    update_act_id = execute_insert_update_query_single(
+        query=UPDATE_ACT_ID,
+        params={
+            "selected_act_name": act_id_update.selected_act_name,
+            "unique_id": act_id_update.unique_id,
+        },
+    )
+    if update_act_id == 0:
+        raise HTTPException(
+            status_code=404, detail="STT result not found or can not update act_id"
+        )
+
+    return {
+        "message": "act_id updated successfully",
     }

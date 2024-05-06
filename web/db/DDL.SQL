@@ -15,12 +15,14 @@ CREATE TABLE files
     file_name varchar(255) NOT NULL,
     file_path varchar(255) NOT NULL,
     created_at timestamp NOT NULL DEFAULT current_timestamp,
+    edit_status varchar(255) DEFAULT 'before edit';
     PRIMARY KEY (id)
 );
 
 
 CREATE TABLE stt_results 
 (
+    id SERIAL PRIMARY KEY,
     file_id VARCHAR(255) NOT NULL,
     index INT,
     start_time INT,
@@ -30,7 +32,7 @@ CREATE TABLE stt_results
     speaker_label VARCHAR(255),
     text_edited VARCHAR(255),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-   	serial SERIAL PRIMARY KEY
+    stt_status INT DEFAULT 0; 
 );
 
 CREATE TABLE roles

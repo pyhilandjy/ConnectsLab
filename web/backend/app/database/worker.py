@@ -40,5 +40,6 @@ def execute_insert_update_query_single(query: str, params: dict = None) -> None:
         except Exception as e:
             db.rollback()
             print(e)
+            return 0
         else:
             db.commit()

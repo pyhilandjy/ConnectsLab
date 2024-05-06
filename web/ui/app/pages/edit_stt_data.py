@@ -7,13 +7,10 @@ from request import (
     edit_stt_result_text,
     add_row_data,
     delete_row_data,
+    edit_status,
+    update_act_id,
 )
-from helper import get_files_ids, get_users_ids_name
-
-
-def add_row(index):
-    new_row = st.session_state.df.iloc[index].copy()
-    st.session_state.df = st.session_state.df.append(new_row, ignore_index=True)
+from helper import get_files_ids, get_users_ids_name, get_stt_act_name, get_act_name
 
 
 def page_2():
@@ -37,14 +34,14 @@ def page_2():
                 get_files_ids(selected_user_id[0]),
                 placeholder="Select file_id",
             )
-            stt_result = get_stt_results_by_file_id(selected_file_id)
+            stt_result = get_stt_results_by_file_id(selected_file_id[0])
             stt_result = pd.DataFrame(stt_result)
 
     # 이후 추가해야할 로직 > text_edit으로 수정이 가능하도록 > db에 데이터를 다시 보내서 수정을 하도록 해야함  > row추가 혹은 삭제를 만들어야함
 
     if not stt_result.empty:
         replace_col1, replace_col2, replace_col3, replace_col4 = st.columns(4)
-        file_id = selected_file_id
+        file_id = selected_file_id[0]
         with replace_col1:
             old_text = st.text_input("Old Text")
         with replace_col2:
@@ -63,48 +60,76 @@ def page_2():
                 speaker_replace(file_id, old_speaker, new_speaker)
                 st.experimental_rerun()
 
-    for i in stt_result["index"]:
-        current_text = stt_result.at[i - 1, "text_edited"]
-        current_speaker = stt_result.at[i - 1, "speaker_label"]
+    for _, row in stt_result.iterrows():
+        unique_id = int(row["id"])
+        file_id = row["file_id"]
+        index = row["index"]
+        current_text = row["text_edited"]
+        current_speaker = row["speaker_label"]
+        stt_act_id = int(row["act_id"])
+        stt_act_name = get_stt_act_name(stt_act_id)
+
+        # 고유 키를 생성하기 위해 `id` 사용
+        unique_key_prefix = f"{unique_id}"
 
         col1, col2 = st.columns([3, 0.5])
 
         with col1:
-            edited_text = st.text_input(f"Row {i}", current_text)
+            edited_text = st.text_input(
+                f"현재화행_{stt_act_name}",
+                current_text,
+                key=f"{unique_key_prefix}_text",
+            )
 
         with col2:
-            st.text_input(f"Row {i}", current_speaker)
+            st.text_input(
+                f"row{index}", current_speaker, key=f"{unique_key_prefix}_speaker"
+            )
 
-        sa_col = st.columns([0.2, 0.2, 0.3, 1.2])  # 버튼을 위한 새로운 컬럼 설정
+        sa_col = st.columns([0.2, 0.2, 0.3, 0.6, 0.6])
         with sa_col[0]:
-            save_button = st.button("Save", key=f"save_{i}")
+            save_button = st.button("Save", key=f"{unique_key_prefix}_save")
             if save_button:
-                index = i
                 response = edit_stt_result_text(file_id, index, edited_text)
                 if response == 200:
                     st.experimental_rerun()
                 else:
-                    st.error(f"Failed to update Row {i}. Please try again.")
+                    st.error(f"Failed to update Row {index}. Please try again.")
 
         with sa_col[1]:
-            add_row = st.button("Add", key=f"add_{i}")
+            add_row = st.button("Add", key=f"{unique_key_prefix}_add")
             if add_row:
-                selected_index = i
-                new_index = i + 1
+                selected_index = index
+                new_index = index + 1
                 response = add_row_data(file_id, selected_index, new_index)
                 if response == 200:
                     st.experimental_rerun()
                 else:
-                    st.error(f"Failed to update Row {i}. Please try again.")
+                    st.error(f"Failed to update Row {index}. Please try again.")
+
         with sa_col[2]:
-            add_row = st.button("Delete", key=f"Delete_{i}")
-            if add_row:
-                selected_index = i
+            del_row = st.button("Delete", key=f"{unique_key_prefix}_delete")
+            if del_row:
+                selected_index = index
                 response = delete_row_data(file_id, selected_index)
                 if response == 200:
                     st.experimental_rerun()
                 else:
-                    st.error(f"Failed to update Row {i}. Please try again.")
+                    st.error(f"Failed to update Row {index}. Please try again.")
+
+        with sa_col[3]:
+            selected_act_name = st.selectbox(
+                "화행 선택", get_act_name(), key=f"{unique_key_prefix}_act"
+            )
+            if selected_act_name != "미설정":
+                update_act_id(selected_act_name, unique_id)
+
+    edit_status_col = st.columns([0.5, 0.5, 0.5, 0.5])
+
+    with edit_status_col[0]:
+        complete_button = st.button("Edit complete", key="edit_complete")
+        if complete_button:
+            response = edit_status(file_id)
 
 
 if __name__ == "__main__":

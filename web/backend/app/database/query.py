@@ -144,7 +144,8 @@ INSERT INTO stt_results (
     confidence, 
     speaker_label, 
     text_edited, 
-    created_at
+    created_at,
+    stt_status
 )
 SELECT
     file_id, 
@@ -155,7 +156,8 @@ SELECT
     confidence, 
     speaker_label, 
     text_edited, 
-    created_at
+    created_at,
+    stt_status
 FROM
     stt_results
 WHERE
@@ -179,4 +181,38 @@ DECREASE_INDEX = text(
     SET index = index - 1
     WHERE file_id = :file_id AND index > :selected_index;
     """
+)
+
+EDIT_STATUS = text(
+    """UPDATE files
+SET edit_status = 'Edit complete'
+WHERE id = :file_id
+"""
+)
+
+SELECT_ACT_ID_STT = text(
+    """
+SELECT act_name
+FROM speech_acts
+WHERE id = :act_id
+    """
+)
+
+SELECT_ACT_NAME = text(
+    """
+SELECT act_name, *
+FROM speech_acts
+    """
+)
+
+UPDATE_ACT_ID = text(
+    """
+UPDATE stt_results
+SET act_id = (
+    SELECT id
+    FROM speech_acts
+    WHERE act_name = :selected_act_name
+)
+WHERE id = :unique_id;
+"""
 )

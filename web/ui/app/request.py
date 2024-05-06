@@ -146,6 +146,7 @@ def edit_stt_result_text(file_id, index, new_text):
         st.error("Failed to update.")
 
 
+@st.cache_data
 def add_row_data(file_id, selected_index, new_index):
     """
     선택된 row의 복사본 밑으로 추가
@@ -177,5 +178,58 @@ def delete_row_data(file_id, selected_index):
     )
     if response.status_code == 200:
         return response.status_code
+    else:
+        st.error("Failed to update.")
+
+
+def edit_status(file_id):
+    """
+    작업상태 변경
+    """
+    data = {
+        "file_id": file_id,
+    }
+    response = requests.post(
+        url=backend_url + "/stt/stt_results/eidt_status/", json=data
+    )
+    if response.status_code == 200:
+        return response.status_code
+    else:
+        st.error("Failed to update.")
+
+
+def stt_act_info(act_id):
+    """
+    stt의 act_id로 act_name 반환
+    """
+    data = {
+        "act_id": act_id,
+    }
+    response = requests.post(
+        url=backend_url + "/stt/stt_results/speech_act/", json=data
+    )
+    if response.status_code == 200:
+        return response.json()
+    else:
+        st.error("Failed to update.")
+
+
+def get_act_names():
+    """speech_act table 정보를 모두 요청"""
+    response = requests.get(backend_url + "/stt/get/speech_act/")
+    if response.status_code == 200:
+        return response.json()
+    else:
+        return []
+
+
+def update_act_id(act_name, stt_id):
+    """
+    선택된 act_name을 stt_result의 act_id로 업데이트
+    """
+    data = {"selected_act_name": act_name, "unique_id": stt_id}
+    response = requests.post(url=backend_url + "/stt/update/act_id/", json=data)
+    if response.status_code == 200:
+        return response.json()
     else:
         st.error("Failed to update.")
