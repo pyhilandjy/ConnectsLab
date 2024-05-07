@@ -29,12 +29,12 @@ from app.services.gen_wordcloud import create_wordcloud, FONT_PATH, violin_chart
 router = APIRouter()
 
 
-class FileModel(BaseModel):
+class Files(BaseModel):
     file_id: str
 
 
-@router.post("/stt-results-by-file_id/", tags=["stt_results"])
-async def get_stt_results_by_file_id(stt_model: FileModel):
+@router.post("/results-by-file_id/", tags=["stt_results"])
+async def get_stt_results_by_file_id(stt_model: Files):
     """file_id별로 stt result를 가져오는 엔드포인트"""
     files_info = execute_select_query(
         query=SELECT_STT_RESULTS, params={"file_id": stt_model.file_id}
@@ -46,14 +46,14 @@ async def get_stt_results_by_file_id(stt_model: FileModel):
     return files_info
 
 
-class ImageModel(BaseModel):
+class Image(BaseModel):
     user_id: str
     start_date: date
     end_date: date
 
 
-@router.post("/create-wordcloud/", tags=["stt_results"])
-async def generate_wordcloud(image_model: ImageModel):
+@router.post("/create/wordcloud/", tags=["image"])
+async def generate_wordcloud(image_model: Image):
     """워드클라우드를 생성하여 이미지 반환하는 엔드포인트(현재 2개의 파일은 보여지는것 구현x)"""
     stt_wordcloud = execute_select_query(
         query=SELECT_STT_RESULTS_FOR_IMAGE,
@@ -83,15 +83,15 @@ async def generate_wordcloud(image_model: ImageModel):
     return FileResponse(image_path)
 
 
-class ImagefileModel(BaseModel):
+class Imagefile(BaseModel):
     user_id: str
     start_date: date
     end_date: date
     type: str
 
 
-@router.post("/image_files/images/", tags=["stt_results"])
-async def get_images(imagefilemodel: ImagefileModel):
+@router.post("/image_files/images/", tags=["image"])
+async def get_images(imagefilemodel: Imagefile):
     """
     images를 zip파일로 반환하는 엔드포인트
     """
@@ -125,14 +125,14 @@ async def get_images(imagefilemodel: ImagefileModel):
     return FileResponse(zip_path, media_type="application/zip", filename="images.zip")
 
 
-class ImagetypeModel(BaseModel):
+class Imagetype(BaseModel):
     user_id: str
     start_date: date
     end_date: date
 
 
-@router.post("/image_files/image_type/", tags=["stt_results"])
-async def get_image_type(imagetypemodel: ImagetypeModel):
+@router.post("/image_files/image_type/", tags=["image"])
+async def get_image_type(imagetypemodel: Imagetype):
     """
     user_id, start_date, end_date 별로 image_type을 가져오는 엔드포인트
     """
@@ -152,8 +152,8 @@ async def get_image_type(imagetypemodel: ImagetypeModel):
     return image_type
 
 
-@router.post("/create-violinplot/", tags=["stt_results"])
-async def generate_violin_chart(image_model: ImageModel):
+@router.post("/create/violinplot/", tags=["image"])
+async def generate_violin_chart(image_model: Image):
     """워드클라우드를 생성하여 이미지 반환하는 엔드포인트(현재 2개의 파일은 보여지는것 구현x)"""
     stt_violin_chart = execute_select_query(
         query=SELECT_STT_RESULTS_FOR_IMAGE,
@@ -187,7 +187,7 @@ class UpdateText(BaseModel):
     new_text: str
 
 
-@router.post("/stt_results/update_text/", tags=["stt_results"])
+@router.post("/results/update_text/", tags=["update_results"])
 async def update_stt_text(update_text_model: UpdateText):
     update_text = execute_insert_update_query_single(
         query=UPDATE_STT_TEXT,
@@ -214,7 +214,7 @@ class UpdateSpeaker(BaseModel):
     new_speaker: str
 
 
-@router.post("/stt_results/update_speaker/", tags=["stt_results"])
+@router.post("/results/update_speaker/", tags=["update_results"])
 async def update_stt_text(update_speaker_model: UpdateSpeaker):
     update_speaker = execute_insert_update_query_single(
         query=UPDATE_STT_SPEAKER,
@@ -241,7 +241,7 @@ class UpdateTextEdit(BaseModel):
     new_text: str
 
 
-@router.post("/stt_results/update_text_edit/", tags=["stt_results"])
+@router.post("/results/update_text_edit/", tags=["update_results"])
 async def update_stt_text(update_text_edit: UpdateTextEdit):
     text_edit = execute_insert_update_query_single(
         query=UPDATE_STT_EDIT_TEXT,
@@ -268,7 +268,7 @@ class AddIndexData(BaseModel):
     new_index: int
 
 
-@router.post("/stt_results/index_add_data/", tags=["stt_results"])
+@router.post("/results/posts/index_data/", tags=["update_results"])
 async def update_stt_text(add_index_data: AddIndexData):
     index_increase = execute_insert_update_query_single(
         query=INCREASE_INDEX,
@@ -308,7 +308,7 @@ class DelIndexData(BaseModel):
     selected_index: int
 
 
-@router.post("/stt_results/index_delete_data/", tags=["stt_results"])
+@router.post("/results/index_delete_data/", tags=["update_results"])
 async def update_stt_text(del_index_data: DelIndexData):
     delete_data = execute_insert_update_query_single(
         query=DELETE_INDEX_DATA,
@@ -339,7 +339,7 @@ class EditStatus(BaseModel):
     file_id: str
 
 
-@router.post("/stt_results/eidt_status/", tags=["stt_results"])
+@router.post("/results/eidt_status/", tags=["status"])
 async def eidt_status(edit_status: EditStatus):
     edit_progress = execute_insert_update_query_single(
         query=EDIT_STATUS, params={"file_id": edit_status.file_id}
@@ -358,9 +358,9 @@ class SpeechAct(BaseModel):
     act_id: int
 
 
-@router.post("/stt_results/speech_act/", tags=["speech_act"])
+@router.post("/results/speech_act/", tags=["speech_act"])
 async def get_speech_act(speech_act: SpeechAct):
-    """유저의 목록을 가져오는 엔드포인트"""
+    """stt_result의 act_id를 통해 act_name을 불러오는 앤드포인트"""
     speech_info = execute_select_query(
         query=SELECT_ACT_ID_STT, params={"act_id": speech_act.act_id}
     )
@@ -373,7 +373,7 @@ async def get_speech_act(speech_act: SpeechAct):
 
 @router.get("/get/speech_act/", tags=["speech_act"])
 async def get_act_name():
-    """유저의 목록을 가져오는 엔드포인트"""
+    """speech act의 목록을 가져오는 엔드포인트"""
     act_name = execute_select_query(
         query=SELECT_ACT_NAME,
     )
