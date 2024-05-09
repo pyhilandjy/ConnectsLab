@@ -75,6 +75,7 @@ def get_image_types(user_id, start_date, end_date):
 
 
 def create_wordcloud(user_id, start_date, end_date):
+    """워드클라우스 생성"""
     data = {"user_id": user_id, "start_date": start_date, "end_date": end_date}
     response = requests.post(url=backend_url + "/stt/create/wordcloud/", json=data)
     if response.status_code == 200:
@@ -86,6 +87,7 @@ def create_wordcloud(user_id, start_date, end_date):
 
 
 def create_violinplot(user_id, start_date, end_date):
+    """바이올린플롯 생성"""
     data = {"user_id": user_id, "start_date": start_date, "end_date": end_date}
     response = requests.post(url=backend_url + "/stt/create/violinplot/", json=data)
     if response.status_code == 200:
@@ -97,6 +99,7 @@ def create_violinplot(user_id, start_date, end_date):
 
 
 def text_replace(file_id, old_text, new_text):
+    """동일 오타 한번에 처리"""
     data = {
         "file_id": file_id,
         "old_text": old_text,
@@ -110,6 +113,7 @@ def text_replace(file_id, old_text, new_text):
 
 
 def speaker_replace(file_id, old_speaker, new_speaker):
+    """동일 발화자 한번에 처리"""
     data = {
         "file_id": file_id,
         "old_speaker": old_speaker,
@@ -126,7 +130,7 @@ def speaker_replace(file_id, old_speaker, new_speaker):
 
 def edit_stt_result_text(file_id, index, new_text):
     """
-    text를 ui에서 수정하여 db update 요청
+    row별 text를 수정
     """
     data = {
         "file_id": file_id,
@@ -180,7 +184,7 @@ def delete_row_data(file_id, selected_index):
 
 def edit_status(file_id):
     """
-    작업상태 변경
+    수정 작업상태 변경
     """
     data = {
         "file_id": file_id,
