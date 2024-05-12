@@ -1,0 +1,15 @@
+credentials:
+  usernames:
+    connects_lab:
+      email: wnsdyd1991@gmail.com
+      failed_login_attempts: 0
+      logged_in: False
+      name: junyong
+      password: hellostreamlit
+cookie:
+  expiry_days: 30
+  key: some_signature_key
+  name: some_cookie_name
+pre-authorized:
+  emails:
+  - wnsdyd1991@gmail.com

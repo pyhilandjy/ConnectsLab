@@ -1,8 +1,0 @@
-[browser] # 사용통계 전송 비활성화
-gatherUsageStats = false
-
-[theme]
-base='dark'
-
-[server]
-port = 3254
