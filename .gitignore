@@ -168,3 +168,7 @@ audio
 *.m4a
 /khaiii
 /web/db/data
+#streamlit
+.streamlit/
+
+
