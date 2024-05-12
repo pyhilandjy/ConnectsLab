@@ -8,7 +8,7 @@ backend_url = st.secrets["backend_url"]
 
 def get_users():
     """users table 정보를 모두 요청"""
-    response = requests.get(backend_url + "/users/")
+    response = requests.post(backend_url + "/users/")
     if response.status_code == 200:
         return response.json()
     else:
@@ -229,3 +229,15 @@ def update_act_id(act_name, stt_id):
         return response.json()
     else:
         st.error("Failed to update.")
+
+
+def login(id):
+    """
+    user의 비밀번호, role_id를 반환하는 앤드포인트
+    """
+    data = {"id": id}
+    response = requests.post(url=backend_url + "/users/login", json=data)
+    if response.status_code == 200:
+        return response.json()
+    else:
+        return []

@@ -7,31 +7,32 @@ from helper import get_files_ids, get_users_ids_name
 
 
 def page_4():
-    st.text("page4")
+    if "logged_in" in st.session_state and st.session_state["logged_in"]:
+        st.text("page4")
 
-    st.title("STT_RESULTS")
+        st.title("STT_RESULTS")
 
-    col_1, col_2 = st.columns([1, 1])
+        col_1, col_2 = st.columns([1, 1])
 
-    with col_1:
-        # 회원 아이디 불러오는 함수
-        selected_user_id = st.selectbox("회원 아이디 선택", get_users_ids_name())
+        with col_1:
+            # 회원 아이디 불러오는 함수
+            selected_user_id = st.selectbox("회원 아이디 선택", get_users_ids_name())
 
-    with col_2:
-        # 회원아이디의 file_id 불러오는 함수
+        with col_2:
+            # 회원아이디의 file_id 불러오는 함수
 
-        if selected_user_id:
+            if selected_user_id:
 
-            selected_file_id = st.selectbox(
-                "파일 id",
-                get_files_ids(selected_user_id[0]),
-                placeholder="Select file_id",
-            )
-            stt_result = get_stt_results_by_file_id(selected_file_id[0])
-            stt_result = pd.DataFrame(stt_result)
+                selected_file_id = st.selectbox(
+                    "파일 id",
+                    get_files_ids(selected_user_id[0]),
+                    placeholder="Select file_id",
+                )
+                stt_result = get_stt_results_by_file_id(selected_file_id[0])
+                stt_result = pd.DataFrame(stt_result)
 
-    if not stt_result.empty:
-        st.data_editor(stt_result)
+        if not stt_result.empty:
+            st.data_editor(stt_result)
 
     # 이후 추가해야할 로직 > text_edit으로 수정이 가능하도록 > db에 데이터를 다시 보내서 수정을 하도록 해야함  > row추가 혹은 삭제를 만들어야함
 

@@ -216,3 +216,11 @@ SET act_id = (
 WHERE id = :unique_id;
 """
 )
+
+LOGIN = text(
+    """
+    SELECT pw, 
+    role_id FROM users 
+    WHERE id = :id
+"""
+)
