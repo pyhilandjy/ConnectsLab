@@ -1,8 +1,9 @@
-from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Form
+from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
 
 from app.database.query import SELECT_USERS, LOGIN
 from app.database.worker import execute_select_query
+from app.services.api import get_api_key
 
 router = APIRouter()
 

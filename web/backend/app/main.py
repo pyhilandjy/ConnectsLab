@@ -1,7 +1,8 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.routers import audio, users, stt, files
+from app.services.api import get_api_key
 
 
 app = FastAPI()
@@ -15,10 +16,10 @@ app.add_middleware(
 )
 
 
-app.include_router(audio.router, prefix="/audio")
-app.include_router(users.router, prefix="/users")
-app.include_router(files.router, prefix="/files")
-app.include_router(stt.router, prefix="/stt")
+app.include_router(audio.router, prefix="/audio", dependencies=[Depends(get_api_key)])
+app.include_router(users.router, prefix="/users", dependencies=[Depends(get_api_key)])
+app.include_router(files.router, prefix="/files", dependencies=[Depends(get_api_key)])
+app.include_router(stt.router, prefix="/stt", dependencies=[Depends(get_api_key)])
 
 
 @app.get("/")

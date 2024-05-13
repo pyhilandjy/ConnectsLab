@@ -1,6 +1,5 @@
 from fastapi import (
     APIRouter,
-    FastAPI,
     File,
     UploadFile,
     HTTPException,
@@ -22,31 +21,6 @@ from app.services.stt import (
 
 
 router = APIRouter()
-
-
-# ClovaSpeechClient()
-
-
-# @router.post("/uploadfile/", tags=["Audio"])
-# async def create_upload_file(user_id: str = Form(...), file: UploadFile = File(...)):
-#     try:
-#         file_id = gen_file_id(user_id)
-#         file_path = gen_file_path(file_id)
-#         await save_file(file, file_path)
-
-#         metadata = create_metadata(file_id, user_id, file.filename, file_path)
-#         insert_file_metadata(metadata)
-
-#         segments = get_stt_results(file_path)
-
-#         return insert_stt_segments(segments, file_id)
-
-#     except Exception as e:
-#         print(f"Error occurred: {e}")
-#         raise HTTPException(status_code=500, detail=f"Failed to upload file: {str(e)}")
-
-
-from fastapi import BackgroundTasks
 
 
 @router.post("/uploadfile/", tags=["Audio"])

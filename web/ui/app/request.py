@@ -4,11 +4,14 @@ from PIL import Image
 from io import BytesIO
 
 backend_url = st.secrets["backend_url"]
+api_key = st.secrets["api_key"]
+api_name = st.secrets["api_name"]
+headers = {api_name: api_key}
 
 
 def get_users():
     """users table 정보를 모두 요청"""
-    response = requests.post(backend_url + "/users/")
+    response = requests.post(backend_url + "/users/", headers=headers)
     if response.status_code == 200:
         return response.json()
     else:
@@ -18,7 +21,7 @@ def get_users():
 def get_files(user_id):
     """user_id 별 files table 모두 요청"""
     data = {"user_id": user_id}
-    response = requests.post(url=backend_url + "/files/", json=data)
+    response = requests.post(url=backend_url + "/files/", json=data, headers=headers)
     if response.status_code == 200:
         return response.json()
     else:
@@ -29,14 +32,18 @@ def send_file(file, user_id):
     """user_id의 audio file을 적재하기 위해 요청"""
     files = {"file": (file.name, file, file.type)}
     data = {"user_id": user_id}
-    response = requests.post(backend_url + "/audio/uploadfile/", files=files, data=data)
+    response = requests.post(
+        backend_url + "/audio/uploadfile/", files=files, data=data, headers=headers
+    )
     return response
 
 
 def get_stt_results_by_file_id(file_id):
     """파일 아이디별로 stt 결과값 요청"""
     data = {"file_id": file_id}
-    response = requests.post(url=backend_url + "/stt/results-by-file_id/", json=data)
+    response = requests.post(
+        url=backend_url + "/stt/results-by-file_id/", json=data, headers=headers
+    )
     if response.status_code == 200:
         return response.json()
     else:
@@ -51,7 +58,9 @@ def get_image_files(user_id, start_date, end_date, type):
         "end_date": end_date,
         "type": type,
     }
-    response = requests.post(url=backend_url + "/stt/image_files/images/", json=data)
+    response = requests.post(
+        url=backend_url + "/stt/image_files/images/", json=data, headers=headers
+    )
     if response.status_code == 200:
         return BytesIO(response.content)
     else:
@@ -66,7 +75,7 @@ def get_image_types(user_id, start_date, end_date):
         "end_date": end_date,
     }
     response = requests.post(
-        url=backend_url + "/stt/image_files/image_type/", json=data
+        url=backend_url + "/stt/image_files/image_type/", json=data, headers=headers
     )
     if response.status_code == 200:
         return response.json()
@@ -77,7 +86,9 @@ def get_image_types(user_id, start_date, end_date):
 def create_wordcloud(user_id, start_date, end_date):
     """워드클라우스 생성"""
     data = {"user_id": user_id, "start_date": start_date, "end_date": end_date}
-    response = requests.post(url=backend_url + "/stt/create/wordcloud/", json=data)
+    response = requests.post(
+        url=backend_url + "/stt/create/wordcloud/", json=data, headers=headers
+    )
     if response.status_code == 200:
         image = Image.open(BytesIO(response.content))
         return image
@@ -89,7 +100,9 @@ def create_wordcloud(user_id, start_date, end_date):
 def create_violinplot(user_id, start_date, end_date):
     """바이올린플롯 생성"""
     data = {"user_id": user_id, "start_date": start_date, "end_date": end_date}
-    response = requests.post(url=backend_url + "/stt/create/violinplot/", json=data)
+    response = requests.post(
+        url=backend_url + "/stt/create/violinplot/", json=data, headers=headers
+    )
     if response.status_code == 200:
         image = Image.open(BytesIO(response.content))
         return image
@@ -105,7 +118,9 @@ def text_replace(file_id, old_text, new_text):
         "old_text": old_text,
         "new_text": new_text,
     }
-    response = requests.post(url=backend_url + "/stt/results/update_text/", json=data)
+    response = requests.post(
+        url=backend_url + "/stt/results/update_text/", json=data, headers=headers
+    )
     if response.status_code == 200:
         st.success("Update successful!")
     else:
@@ -120,7 +135,7 @@ def speaker_replace(file_id, old_speaker, new_speaker):
         "new_speaker": new_speaker,
     }
     response = requests.post(
-        url=backend_url + "/stt/results/update_speaker/", json=data
+        url=backend_url + "/stt/results/update_speaker/", json=data, headers=headers
     )
     if response.status_code == 200:
         st.success("Update successful!")
@@ -138,7 +153,7 @@ def edit_stt_result_text(file_id, index, new_text):
         "new_text": new_text,
     }
     response = requests.post(
-        url=backend_url + "/stt/results/update_text_edit/", json=data
+        url=backend_url + "/stt/results/update_text_edit/", json=data, headers=headers
     )
     if response.status_code == 200:
         return response.status_code
@@ -157,7 +172,7 @@ def add_row_data(file_id, selected_index, new_index):
         "new_index": new_index,
     }
     response = requests.post(
-        url=backend_url + "/stt/results/posts/index_data/", json=data
+        url=backend_url + "/stt/results/posts/index_data/", json=data, headers=headers
     )
     if response.status_code == 200:
         return response.status_code
@@ -174,7 +189,7 @@ def delete_row_data(file_id, selected_index):
         "selected_index": selected_index,
     }
     response = requests.post(
-        url=backend_url + "/stt/results/index_delete_data/", json=data
+        url=backend_url + "/stt/results/index_delete_data/", json=data, headers=headers
     )
     if response.status_code == 200:
         return response.status_code
@@ -189,7 +204,9 @@ def edit_status(file_id):
     data = {
         "file_id": file_id,
     }
-    response = requests.post(url=backend_url + "/stt/results/eidt_status/", json=data)
+    response = requests.post(
+        url=backend_url + "/stt/results/eidt_status/", json=data, headers=headers
+    )
     if response.status_code == 200:
         return response.status_code
     else:
@@ -203,7 +220,9 @@ def stt_act_info(act_id):
     data = {
         "act_id": act_id,
     }
-    response = requests.post(url=backend_url + "/stt/results/speech_act/", json=data)
+    response = requests.post(
+        url=backend_url + "/stt/results/speech_act/", json=data, headers=headers
+    )
     if response.status_code == 200:
         return response.json()
     else:
@@ -224,7 +243,9 @@ def update_act_id(act_name, stt_id):
     선택된 act_name을 stt_result의 act_id로 업데이트
     """
     data = {"selected_act_name": act_name, "unique_id": stt_id}
-    response = requests.post(url=backend_url + "/stt/update/act_id/", json=data)
+    response = requests.post(
+        url=backend_url + "/stt/update/act_id/", json=data, headers=headers
+    )
     if response.status_code == 200:
         return response.json()
     else:
@@ -236,7 +257,9 @@ def login(id):
     user의 비밀번호, role_id를 반환하는 앤드포인트
     """
     data = {"id": id}
-    response = requests.post(url=backend_url + "/users/login", json=data)
+    response = requests.post(
+        url=backend_url + "/users/login", json=data, headers=headers
+    )
     if response.status_code == 200:
         return response.json()
     else:
